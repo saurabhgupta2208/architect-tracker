@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Architect Tracker
+Comment=Daily practice tracker for Senior → Architect transition
+Exec=bash -c "cd %k/.. && ./start.sh"
+Icon=utilities-terminal
+Terminal=true
+Categories=Education;Development;
+Keywords=architect;java;system design;dsa;tracker;
+StartupNotify=true
