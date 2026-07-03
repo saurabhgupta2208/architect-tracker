@@ -823,6 +823,7 @@ function SkillsView({ skills, onSave }) {
 
 function SkillCard({ skill, onEdit, onDelete, onToggle }) {
   const [expanded, setExpanded] = useState(false);
+  const [notesExpanded, setNotesExpanded] = useState(false);
   const topicsDone = skill.topics.filter(t => skill.topicProgress?.[t]).length;
   const profColor = skill.proficiency >= skill.target ? "#1D9E75" : skill.proficiency >= 50 ? "#7F77DD" : "#D85A30";
   return (
@@ -867,7 +868,18 @@ function SkillCard({ skill, onEdit, onDelete, onToggle }) {
               })}
             </div>
           )}
-          {skill.notes && <div style={{ fontSize: 12, color: "#777", marginTop: 8, padding: "6px 8px", background: "#FAEEDA", borderRadius: 6, lineHeight: 1.5 }}>{skill.notes}</div>}
+          {skill.notes && (
+            <div style={{ marginTop: 8 }}>
+              <button onClick={() => setNotesExpanded(e => !e)} style={{ fontSize: 11, color: "#7F77DD", background: "transparent", border: "none", cursor: "pointer", padding: 0, fontWeight: 700, marginBottom: 4 }}>
+                {notesExpanded ? "▲ Hide notes" : "▼ Show notes"}
+              </button>
+              {notesExpanded && (
+                <div style={{ padding: "8px 12px", background: "#FAEEDA", borderRadius: 8, overflow: "hidden" }}>
+                  <MarkdownRenderer text={skill.notes} />
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </Card>
@@ -1003,6 +1015,22 @@ function MarkdownRenderer({ text }) {
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
 
+    const extractMap = [];
+    
+    // Images
+    html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, url) => {
+      const id = extractMap.length;
+      extractMap.push(`<img src="${url}" alt="${alt}" style="max-width: 100%; border-radius: 8px; margin: 12px 0; display: block;" />`);
+      return `@@EXTRACT${id}@@`;
+    });
+
+    // Links
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+      const id = extractMap.length;
+      extractMap.push(`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #3C3489; text-decoration: underline; font-weight: 500;">${text}</a>`);
+      return `@@EXTRACT${id}@@`;
+    });
+
     // Inline code
     html = html.replace(/`([^`]+)`/g, '<code style="background: #f1f0ea; padding: 2px 5px; border-radius: 4px; font-family: monospace; font-size: 0.9em; color: #d85a30;">$1</code>');
     // Headings
@@ -1019,8 +1047,6 @@ function MarkdownRenderer({ text }) {
     html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
     html = html.replace(/__([^_]+)__/g, '<strong>$1</strong>');
     html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
-    // Links
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #3C3489; text-decoration: underline; font-weight: 500;">$1</a>');
 
     // Tables
     const tLines = html.split('\n');
@@ -1082,6 +1108,9 @@ function MarkdownRenderer({ text }) {
       return `<p style="line-height:1.7;margin:12px 0 16px">${t.replace(/\n/g, '<br />')}</p>`;
     }).join('\n');
 
+    // Restore Images and Links
+    html = html.replace(/@@EXTRACT(\d+)@@/g, (match, id) => extractMap[parseInt(id, 10)]);
+
     return html;
   }
 
@@ -1116,6 +1145,51 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
   const [editTitle, setEditTitle] = useState("");
   const [editText, setEditText] = useState("");
   const [editCategory, setEditCategory] = useState("System Design");
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const textareaRef = useRef(null);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: reader.result })
+        });
+        const resData = await response.json();
+        
+        if (resData.url) {
+          const imgMarkdown = `\n![Image](${resData.url})\n`;
+          const ta = textareaRef.current;
+          if (ta) {
+            const start = ta.selectionStart;
+            const end = ta.selectionEnd;
+            const newText = editText.substring(0, start) + imgMarkdown + editText.substring(end);
+            setEditText(newText);
+            setTimeout(() => {
+              ta.selectionStart = ta.selectionEnd = start + imgMarkdown.length;
+              ta.focus();
+            }, 0);
+          } else {
+            setEditText(prev => prev + imgMarkdown);
+          }
+        }
+      } catch (err) {
+        console.error("Upload failed:", err);
+        alert("Failed to upload image");
+      } finally {
+        setIsUploading(false);
+        e.target.value = null;
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   const journalText = data.journal || "";
   const pinnedText = data.pinnedNote || "";
@@ -1289,10 +1363,15 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
           style={{ width: "100%", minHeight: 45, border: "none", outline: "none", background: "transparent", fontSize: 13, color: "#333", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, boxSizing: "border-box" }} 
         />
       </Card>
-
-      <div style={{ display: "flex", gap: 20, height: "calc(100vh - 220px)", minHeight: 520, background: "#fff", border: "1px solid #E8E6E0", borderRadius: 12, overflow: "hidden", boxShadow: "0 4px 20px -2px rgba(0, 0, 0, 0.05)" }}>
+      <div style={isExpanded ? {
+        position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999,
+        display: "flex", background: "#fff", overflow: "hidden"
+      } : {
+        display: "flex", gap: 20, height: "calc(100vh - 220px)", minHeight: 520, background: "#fff", border: "1px solid #E8E6E0", borderRadius: 12, overflow: "hidden", boxShadow: "0 4px 20px -2px rgba(0, 0, 0, 0.05)"
+      }}>
         
         {/* Left Pane - Sidebar */}
+        {!isExpanded && (
         <div style={{ width: 280, borderRight: "1px solid #E8E6E0", display: "flex", flexDirection: "column", background: "#FAF9F6" }}>
           
           {/* Sidebar Header: Categories list */}
@@ -1472,6 +1551,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
             </div>
           )}
         </div>
+        )}
 
         {/* Right Pane - Workspace */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: "#fff" }}>
@@ -1514,6 +1594,22 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
 
               {/* Right Side Actions */}
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <button 
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  style={{
+                    background: "none",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: 6,
+                    color: "#475569",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    padding: "4px 10px",
+                  }}
+                  title={isExpanded ? "Restore view" : "Expand to full page"}
+                >
+                  {isExpanded ? "Collapse" : "Expand"}
+                </button>
                 {!isDailyLog && (
                   <>
                     <div style={{ display: "flex", border: "1px solid #cbd5e1", borderRadius: 6, overflow: "hidden", background: "#fff" }}>
@@ -1574,7 +1670,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
           {/* Note Content / Scrollable workspace */}
           <div style={{ flex: 1, overflowY: "auto", padding: 24, boxSizing: "border-box" }}>
             {isDailyLog ? (
-              <div style={{ maxWidth: 720 }}>
+              <div style={{ maxWidth: "100%" }}>
                 <h3 style={{ marginTop: 0, fontSize: 16, borderBottom: "2px solid #E8E6E0", paddingBottom: 8 }}>📝 Logs & Notes</h3>
                 {dailyLogData.notes.length === 0 ? (
                   <p style={{ fontSize: 13, color: "#64748b", fontStyle: "italic" }}>No log entries recorded for this day.</p>
@@ -1610,7 +1706,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
             ) : selectedNote ? (
               isEditing ? (
                 // Edit view
-                <div style={{ display: "flex", flexDirection: "column", gap: 14, height: "100%", maxWidth: 800 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 14, height: "100%", maxWidth: "100%" }}>
                   
                   {selectedId !== "journal" && (
                     <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -1639,10 +1735,20 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                   )}
 
                   <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", display: "block", marginBottom: 4 }}>
-                      Content (Markdown Supported)
-                    </label>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b" }}>
+                        Content (Markdown Supported)
+                      </label>
+                      <label style={{ 
+                        fontSize: 11, fontWeight: 700, color: "#475569", 
+                        cursor: "pointer", background: "#f1f5f9", padding: "4px 8px", borderRadius: 4, display: "flex", alignItems: "center", gap: 4
+                      }}>
+                        <span>{isUploading ? "⏳ Uploading..." : "🖼️ Insert Image"}</span>
+                        <input type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageUpload} disabled={isUploading} />
+                      </label>
+                    </div>
                     <textarea 
+                      ref={textareaRef}
                       value={editText}
                       onChange={e => setEditText(e.target.value)}
                       placeholder={selectedId === "journal" 
@@ -1687,7 +1793,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                 </div>
               ) : (
                 // Rendered Preview view
-                <div style={{ maxWidth: 720 }}>
+                <div style={{ maxWidth: "100%" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, borderBottom: "1px solid #f1f5f9", paddingBottom: 10 }}>
                     <h1 style={{ margin: 0, fontSize: "1.8em", fontWeight: 800, color: "#0f172a" }}>
                       {selectedId === "journal" ? "Study Journal" : selectedNote.title || "Untitled Note"}
@@ -2016,45 +2122,113 @@ function SettingsModal({ data, onSave, onClose }) {
   );
 }
 
-function GeneralNotesSidebar({ data, onUpdate, onSelectNote, activeNoteId }) {
+function GeneralNotesSidebar({ data = [], onUpdate }) {
   const [txt, setTxt] = useState("");
-  const addNote = () => {
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [expandedNoteIds, setExpandedNoteIds] = useState(new Set());
+
+  const toggleExpand = (id) => {
+    const next = new Set(expandedNoteIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setExpandedNoteIds(next);
+  };
+
+  const handleSaveOrUpdate = () => {
     if (!txt.trim()) return;
-    const lines = txt.split("\n").map(l => l.trim()).filter(Boolean);
-    const title = lines.length > 0 ? lines[0].replace(/^#+[ ]+/, "").substring(0, 50) : "Quick Note";
-    const newNote = { 
-      id: Date.now(), 
-      title: title, 
-      text: txt, 
-      category: "General", 
-      time: new Date().toISOString(),
-      pinned: false 
-    };
-    onUpdate([newNote, ...data]);
+    
+    if (editingNoteId !== null) {
+      // Update existing note
+      const updated = data.map(n => {
+        if (n.id === editingNoteId) {
+          const lines = txt.split("\n").map(l => l.trim()).filter(Boolean);
+          const title = lines.length > 0 ? lines[0].replace(/^#+[ ]+/, "").substring(0, 50) : "Quick Note";
+          return { ...n, title, text: txt, time: new Date().toISOString() };
+        }
+        return n;
+      });
+      onUpdate(updated);
+      setEditingNoteId(null);
+    } else {
+      // Add new note
+      const lines = txt.split("\n").map(l => l.trim()).filter(Boolean);
+      const title = lines.length > 0 ? lines[0].replace(/^#+[ ]+/, "").substring(0, 50) : "Quick Note";
+      const newNote = {
+        id: Date.now(),
+        title: title,
+        text: txt,
+        category: "General",
+        time: new Date().toISOString(),
+        pinned: false
+      };
+      onUpdate([newNote, ...data]);
+    }
     setTxt("");
   };
+
+  const startEdit = (n, e) => {
+    e.stopPropagation();
+    setEditingNoteId(n.id);
+    setTxt(n.text);
+  };
+
+  const cancelEdit = () => {
+    setEditingNoteId(null);
+    setTxt("");
+  };
+
+  const handleDelete = (id, e) => {
+    e.stopPropagation();
+    if (window.confirm("Delete note?")) {
+      onUpdate(data.filter(x => x.id !== id));
+      if (editingNoteId === id) {
+        cancelEdit();
+      }
+    }
+  };
+
   return (
     <div style={{ width: 260, borderRight: "1px solid #E6E4E0", background: "#fbfaf8", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0 }}>
       <div style={{ padding: "20px 16px", borderBottom: "1px solid #E6E4E0" }}>
         <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700 }}>General Notes</h3>
       </div>
       <div style={{ padding: 12, borderBottom: "1px solid #E6E4E0" }}>
-        <textarea value={txt} onChange={e => setTxt(e.target.value)} placeholder="Quick note... (Press save)" style={{ ...inpStyle, height: 80, resize: "none", marginBottom: 8 }} />
-        <button onClick={addNote} style={{ width: "100%", padding: "6px", borderRadius: 8, background: "#1a1a1a", color: "#fff", border: "none", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>Save Note</button>
+        <textarea 
+          value={txt} 
+          onChange={e => setTxt(e.target.value)} 
+          placeholder={editingNoteId ? "Edit your note..." : "Quick note... (Press save)"} 
+          style={{ ...inpStyle, height: 80, resize: "none", marginBottom: 8 }} 
+        />
+        <div style={{ display: "flex", gap: 6 }}>
+          <button 
+            onClick={handleSaveOrUpdate} 
+            style={{ flex: 1, padding: "6px", borderRadius: 8, background: "#1a1a1a", color: "#fff", border: "none", fontSize: 12, cursor: "pointer", fontWeight: 700 }}
+          >
+            {editingNoteId ? "Update" : "Save Note"}
+          </button>
+          {editingNoteId !== null && (
+            <button 
+              onClick={cancelEdit} 
+              style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #cbd5e1", background: "transparent", fontSize: 12, cursor: "pointer", color: "#475569" }}
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </div>
       <div style={{ flex: 1, overflowY: "auto", padding: 12, display: "flex", flexDirection: "column", gap: 8 }}>
         {data.map(n => {
-          const isActive = activeNoteId === n.id;
+          const isExpanded = expandedNoteIds.has(n.id);
           return (
             <div 
               key={n.id} 
-              onClick={() => onSelectNote && onSelectNote(n.id)}
+              onClick={() => toggleExpand(n.id)}
               style={{ 
-                background: isActive ? "#fff" : "#fff", 
+                background: "#fff", 
                 padding: 10, 
                 borderRadius: 8, 
-                border: isActive ? "1.5px solid #1a1a1a" : "1px solid #E6E4E0", 
-                boxShadow: isActive ? "0 2px 8px rgba(0,0,0,0.05)" : "none",
+                border: isExpanded ? "1.5px solid #1a1a1a" : "1px solid #E6E4E0", 
+                boxShadow: isExpanded ? "0 2px 8px rgba(0,0,0,0.05)" : "none",
                 position: "relative",
                 cursor: "pointer",
                 transition: "all 0.15s"
@@ -2067,22 +2241,37 @@ function GeneralNotesSidebar({ data, onUpdate, onSelectNote, activeNoteId }) {
               <div style={{ fontSize: 10, color: "#94a3b8", marginBottom: 6 }}>
                 {n.category || "General"}
               </div>
-              <div style={{ fontSize: 11, lineHeight: 1.4, color: "#475569", overflow: "hidden", display: "-webkit-box", WebKitLineClamp: 2, WebKitBoxOrient: "vertical", whiteSpace: "normal" }}>
-                {n.text ? n.text.replace(/#+ /g, "") : "Empty note"}
+              <div style={{ 
+                fontSize: 11, 
+                lineHeight: 1.4, 
+                color: "#475569", 
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
+                ...(isExpanded ? {} : {
+                  overflow: "hidden", 
+                  display: "-webkit-box", 
+                  WebKitLineClamp: 2, 
+                  WebKitBoxOrient: "vertical"
+                })
+              }}>
+                {n.text || "Empty note"}
               </div>
               <div style={{ fontSize: 9, color: "#aaa", marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span>{new Date(n.time || Date.now()).toLocaleDateString()}</span>
-                <span 
-                  onClick={(e) => { 
-                    e.stopPropagation();
-                    if (window.confirm("Delete note?")) {
-                      onUpdate(data.filter(x => x.id !== n.id));
-                    }
-                  }} 
-                  style={{ cursor: "pointer", color: "#ef4444", fontWeight: 700 }}
-                >
-                  Delete
-                </span>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <span 
+                    onClick={(e) => startEdit(n, e)} 
+                    style={{ cursor: "pointer", color: "#3b82f6", fontWeight: 700 }}
+                  >
+                    Edit
+                  </span>
+                  <span 
+                    onClick={(e) => handleDelete(n.id, e)} 
+                    style={{ cursor: "pointer", color: "#ef4444", fontWeight: 700 }}
+                  >
+                    Delete
+                  </span>
+                </div>
               </div>
             </div>
           );
@@ -2229,6 +2418,7 @@ export default function App() {
   };
 
   const updateSettings = (settings) => persistData({ ...data, settings: { ...data.settings, ...settings } });
+  const updateQuickNotes = (notes) => persistData({ ...data, quickNotes: notes });
   const updateGeneralNotes = (notes) => persistData({ ...data, generalNotes: notes });
   const updateDailyNotes = (date, notes) => persistData({ ...data, dailyNotes: { ...data.dailyNotes, [date]: notes } });
   const updateDailyPlanning = (date, planning) => persistData({ ...data, dailyPlanning: { ...data.dailyPlanning, [date]: planning } });
@@ -2251,10 +2441,8 @@ export default function App() {
 
       {sidebarOpen && (
         <GeneralNotesSidebar 
-          data={data.generalNotes} 
-          onUpdate={updateGeneralNotes} 
-          onSelectNote={handleSelectNote}
-          activeNoteId={selectedNoteId}
+          data={data.quickNotes || []} 
+          onUpdate={updateQuickNotes} 
         />
       )}
 
@@ -2290,7 +2478,7 @@ export default function App() {
         </div>
 
         {/* Global stats bar */}
-        <div style={{ maxWidth: 820, margin: "0 auto", padding: "16px 16px 0", width: "100%", boxSizing: "border-box" }}>
+        <div style={{ maxWidth: 1425, margin: "0 auto", padding: "16px 16px 0", width: "100%", boxSizing: "border-box" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,minmax(0,1fr))", gap: 10, marginBottom: 18 }}>
             {[
               { val: `Day ${dayNumber}`, lbl: formatFullDate(todayKey) },
@@ -2306,7 +2494,7 @@ export default function App() {
           </div>
         </div>
 
-        <div style={{ maxWidth: view === "notes" ? 1100 : 820, margin: "0 auto", padding: view === "notes" ? "0 16px 24px" : "0 16px 48px", width: "100%", boxSizing: "border-box", transition: "max-width 0.2s" }}>
+        <div style={{ maxWidth: view === "notes" ? 1500 : 1425, margin: "0 auto", padding: view === "notes" ? "0 16px 24px" : "0 16px 48px", width: "100%", boxSizing: "border-box", transition: "max-width 0.2s" }}>
           {view === "today" && (
             <>
               <TodayView data={data} allTasks={allTasks} onUpdate={persistData} />

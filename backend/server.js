@@ -7,8 +7,13 @@ const app = express();
 const PORT = 3001;
 const DATA_DIR = path.join(__dirname, "..", "data");
 const DATA_FILE = path.join(DATA_DIR, "tracker.json");
+const IMAGES_DIR = path.join(DATA_DIR, "images");
 
-//app.use(cors());
+// Ensure data dirs exist
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+if (!fs.existsSync(IMAGES_DIR)) fs.mkdirSync(IMAGES_DIR, { recursive: true });
+
+app.use("/api/images", express.static(IMAGES_DIR));
 //app.use(express.json());
 
 app.use(cors());
@@ -27,9 +32,6 @@ const FRONTEND_BUILD = path.join(__dirname, "..", "frontend", "build");
 if (fs.existsSync(FRONTEND_BUILD)) {
   app.use(express.static(FRONTEND_BUILD));
 }
-
-// Ensure data dir exists
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
 function readData() {
   try {
@@ -68,6 +70,7 @@ function getDefaultData() {
     dailyNotes: {},    // { [dateKey]: [{ id, text, time }] }
     dailyPlanning: {}, // { [dateKey]: [{ id, text, achieved }] }
     generalNotes: [],  // [{ id, text, time }]
+    quickNotes: [],    // [{ id, title, text, category, time, pinned }]
     journal: "",
     pinnedNote: "",
     skills: getDefaultSkills(),
@@ -109,6 +112,7 @@ function mergeWithDefaults(saved) {
   if (merged.journal === undefined) merged.journal = "";
   if (merged.pinnedNote === undefined) merged.pinnedNote = "";
   if (merged.generalNotes === undefined) merged.generalNotes = [];
+  if (merged.quickNotes === undefined) merged.quickNotes = [];
   if (merged.dailyPlanning === undefined) merged.dailyPlanning = {};
 
   return merged;
@@ -440,6 +444,38 @@ app.get("/api/today", (req, res) => {
   const data = readData();
   const today = getTodayKey();
   res.json({ today, dayData: data.days[today] || { tasks: {}, checklist: {} } });
+});
+
+// POST upload image
+app.post("/api/upload", (req, res) => {
+  try {
+    const { image } = req.body;
+    if (!image) {
+      return res.status(400).json({ error: "No image provided" });
+    }
+    
+    // image is expected to be a base64 string like "data:image/png;base64,iVBORw0KGgo..."
+    const matches = image.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    if (!matches || matches.length !== 3) {
+      return res.status(400).json({ error: "Invalid image format" });
+    }
+    
+    const imageType = matches[1];
+    const imageBuffer = Buffer.from(matches[2], "base64");
+    
+    // Extract extension (e.g. image/png -> png)
+    const ext = imageType.split("/")[1] || "png";
+    const filename = `img_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
+    const filepath = path.join(IMAGES_DIR, filename);
+    
+    fs.writeFileSync(filepath, imageBuffer);
+    
+    // Return URL path for frontend to use
+    res.json({ url: `/api/images/${filename}` });
+  } catch (error) {
+    console.error("Image upload error:", error);
+    res.status(500).json({ error: "Failed to upload image" });
+  }
 });
 
 // Fallback to frontend
