@@ -1127,12 +1127,13 @@ function MarkdownRenderer({ text }) {
 }
 
 // ─── REDESIGNED NOTES VIEW ────────────────────────────────────
-const NOTE_CATEGORIES = ["All Categories", "System Design", "Microservices", "Design Patterns", "Core CS & DSA", "General", "Daily Logs"];
+const NOTE_CATEGORIES = ["All Categories", "System Design", "Microservices", "Design Patterns", "JAVA", "Core CS & DSA", "General", "Daily Logs"];
 
 const CATEGORY_COLORS = {
   "System Design": { text: "#d97706", bg: "#fef3c7" },
   "Microservices": { text: "#4f46e5", bg: "#e0e7ff" },
   "Design Patterns": { text: "#0d9488", bg: "#ccfbf1" },
+  "JAVA": { text: "#105412", bg: "#fef2e6" },
   "Core CS & DSA": { text: "#7c3aed", bg: "#f3e8ff" },
   "General": { text: "#475569", bg: "#f1f5f9" },
   "Daily Logs": { text: "#059669", bg: "#d1fae5" }
