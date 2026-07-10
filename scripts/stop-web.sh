@@ -5,7 +5,8 @@
 # ─────────────────────────────────────────────────────────────
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PID_FILE="$SCRIPT_DIR/tracker-web.pid"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+PID_FILE="$PROJECT_ROOT/logs/tracker-web.pid"
 
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'

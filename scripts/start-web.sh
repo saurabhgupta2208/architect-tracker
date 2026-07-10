@@ -6,13 +6,14 @@
 
 set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-FRONTEND_DIR="$SCRIPT_DIR/frontend"
-BACKEND_DIR="$SCRIPT_DIR/backend-server/architect-tracker-web"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+FRONTEND_DIR="$PROJECT_ROOT/frontend"
+BACKEND_DIR="$PROJECT_ROOT/backend-server/architect-tracker-web"
 BUILD_DIR="$FRONTEND_DIR/build"
 STATIC_DIR="$BACKEND_DIR/src/main/resources/static"
-DATA_DIR="$SCRIPT_DIR/backend-server/data"
-LOG_FILE="$SCRIPT_DIR/tracker-web.log"
-PID_FILE="$SCRIPT_DIR/tracker-web.pid"
+DATA_DIR="$PROJECT_ROOT/backend-server/data"
+LOG_FILE="$PROJECT_ROOT/logs/tracker-web.log"
+PID_FILE="$PROJECT_ROOT/logs/tracker-web.pid"
 
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
