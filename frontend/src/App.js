@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-
-const API = "http://localhost:3001/api";
+import BookNoteView from "./components/BookNoteView";
+import { API_URL as API } from "./constants";
 
 // ─── Motivational quotes ──────────────────────────────────────
 const QUOTES = [
@@ -984,7 +984,7 @@ function migrateLegacyNotes(notes) {
 }
 
 // ─── MARKDOWN RENDERER ────────────────────────────────────────
-function MarkdownRenderer({ text }) {
+export function MarkdownRenderer({ text }) {
   if (!text) return <div style={{ fontSize: 13, color: "#888", fontStyle: "italic" }}>No content yet. Click Edit to add some notes.</div>;
 
   // Step 1: Split raw text into alternating [text, code, text, code...] segments
@@ -1127,9 +1127,9 @@ function MarkdownRenderer({ text }) {
 }
 
 // ─── REDESIGNED NOTES VIEW ────────────────────────────────────
-const NOTE_CATEGORIES = ["All Categories", "System Design", "Microservices", "Design Patterns", "JAVA", "Core CS & DSA", "General", "Daily Logs"];
+export const NOTE_CATEGORIES = ["All Categories", "System Design", "Microservices", "Design Patterns", "JAVA", "Core CS & DSA", "General", "Daily Logs"];
 
-const CATEGORY_COLORS = {
+export const CATEGORY_COLORS = {
   "System Design": { text: "#d97706", bg: "#fef3c7" },
   "Microservices": { text: "#4f46e5", bg: "#e0e7ff" },
   "Design Patterns": { text: "#0d9488", bg: "#ccfbf1" },
@@ -1158,7 +1158,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
     const reader = new FileReader();
     reader.onloadend = async () => {
       try {
-        const response = await fetch("http://localhost:3001/api/upload", {
+        const response = await fetch(`${API}/upload`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ image: reader.result })
@@ -1261,7 +1261,6 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
     }
   };
 
-  // Handle Create Note
   const handleCreateNote = () => {
     const defaultCat = activeCategory !== "All Categories" && activeCategory !== "Daily Logs" ? activeCategory : "System Design";
     const newNote = {
@@ -1276,6 +1275,23 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
     onUpdate({ ...data, generalNotes: updatedNotes });
     setSelectedId(newNote.id);
     setIsEditing(true);
+  };
+
+  const handleCreateBook = () => {
+    const defaultCat = activeCategory !== "All Categories" && activeCategory !== "Daily Logs" ? activeCategory : "System Design";
+    const newBook = {
+      id: Date.now(),
+      title: "Untitled Book",
+      type: "book",
+      category: defaultCat,
+      time: new Date().toISOString(),
+      pinned: false,
+      chapters: []
+    };
+    const updatedNotes = [newBook, ...(data.generalNotes || [])];
+    onUpdate({ ...data, generalNotes: updatedNotes });
+    setSelectedId(newBook.id);
+    setIsEditing(false);
   };
 
   // Filtering Notes
@@ -1527,11 +1543,11 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
 
           {/* Sidebar Footer: Add button */}
           {activeCategory !== "Daily Logs" && (
-            <div style={{ padding: 12, borderTop: "1px solid #E8E6E0", background: "#f8fafc" }}>
+            <div style={{ padding: 12, borderTop: "1px solid #E8E6E0", background: "#f8fafc", display: "flex", gap: 8 }}>
               <button 
                 onClick={handleCreateNote}
                 style={{ 
-                  width: "100%", 
+                  flex: 1, 
                   padding: "8px", 
                   borderRadius: 8, 
                   background: "#1e293b", 
@@ -1547,7 +1563,28 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                   boxShadow: "0 2px 4px rgba(0,0,0,0.08)"
                 }}
               >
-                <span>➕</span> Create New Note
+                <span>➕</span> Note
+              </button>
+              <button 
+                onClick={handleCreateBook}
+                style={{ 
+                  flex: 1, 
+                  padding: "8px", 
+                  borderRadius: 8, 
+                  background: "#1e293b", 
+                  color: "#fff", 
+                  border: "none", 
+                  fontSize: 12, 
+                  fontWeight: 700, 
+                  cursor: "pointer", 
+                  display: "flex", 
+                  alignItems: "center", 
+                  justifyContent: "center", 
+                  gap: 6,
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.08)"
+                }}
+              >
+                <span>📘</span> Book
               </button>
             </div>
           )}
@@ -1555,6 +1592,18 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
         )}
 
         {/* Right Pane - Workspace */}
+        {selectedNote && selectedNote.type === "book" ? (
+          <BookNoteView 
+            note={selectedNote} 
+            onUpdate={(updatedNote) => {
+              const updatedNotes = (data.generalNotes || []).map(n => n.id === updatedNote.id ? updatedNote : n);
+              onUpdate({ ...data, generalNotes: updatedNotes });
+            }}
+            isExpanded={isExpanded}
+            setIsExpanded={setIsExpanded}
+            onDelete={() => handleDeleteNote(selectedNote.id)}
+          />
+        ) : (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: "#fff" }}>
           
           {/* Note View Header / Toolbar */}
@@ -1829,6 +1878,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
           </div>
 
         </div>
+        )}
 
       </div>
     </div>
@@ -2082,7 +2132,7 @@ function Modal({ title, onClose, children }) {
 }
 
 // ─── Shared style tokens ──────────────────────────────────────
-const inpStyle = { width: "100%", border: "1px solid #ddd", borderRadius: 8, padding: "8px 10px", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", background: "#fff" };
+export const inpStyle = { width: "100%", border: "1px solid #ddd", borderRadius: 8, padding: "8px 10px", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", background: "#fff" };
 const smallBtn = { fontSize: 11, padding: "2px 7px", borderRadius: 6, border: "1px solid #ddd", background: "transparent", cursor: "pointer", color: "#555" };
 const navBtn = { fontSize: 14, padding: "2px 8px", borderRadius: 6, border: "1px solid #ddd", background: "transparent", cursor: "pointer", color: "#555", lineHeight: 1.4 };
 const navBtnFull = { flex: 1, padding: "8px", borderRadius: 10, border: "1px solid #ddd", background: "transparent", fontSize: 13, cursor: "pointer", color: "#555" };
