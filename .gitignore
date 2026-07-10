@@ -1,3 +1,14 @@
-frontend/node_modules
-frontend/build/static/js
+# Frontend
+frontend/node_modules/
+frontend/build/
+frontend/.env.local
+
+#Node JS backend
 backend/node_modules
+
+# Backend (Spring Boot)
+backend-server/architect-tracker-web/.gradle/
+backend-server/architect-tracker-web/build/
+
+# Application Logs
+logs/
