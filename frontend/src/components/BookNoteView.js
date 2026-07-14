@@ -172,7 +172,7 @@ export default function BookNoteView({ note, onUpdate, isExpanded, setIsExpanded
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%" }}>
       {/* Header toolbar */}
-      <div style={{ padding: "12px 24px", borderBottom: "1px solid #E8E6E0", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FAF9F6", flexShrink: 0 }}>
+      <div style={{ padding: "12px 24px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg-sidebar)", flexShrink: 0 }}>
         <div>
           {isEditingMeta ? (
             <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
@@ -190,7 +190,7 @@ export default function BookNoteView({ note, onUpdate, isExpanded, setIsExpanded
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
-              <button onClick={handleSaveMeta} style={{ padding: "4px 10px", background: "#1e293b", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>Save</button>
+              <button onClick={handleSaveMeta} style={{ padding: "4px 10px", background: "var(--btn-bg)", color: "var(--btn-text)", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>Save</button>
             </div>
           ) : (
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -198,10 +198,10 @@ export default function BookNoteView({ note, onUpdate, isExpanded, setIsExpanded
                 <span onClick={handleTogglePin} style={{ cursor: "pointer", fontSize: 16 }} title={note.pinned ? "Unpin book" : "Pin book"}>
                   {note.pinned ? "📌" : "📍"}
                 </span>
-                <span style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>
+                <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-main)" }}>
                   📘 {note.title || "Untitled Book"}
                 </span>
-                <button onClick={() => setIsEditingMeta(true)} style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: 12, color: "#64748b" }}>✎</button>
+                <button onClick={() => setIsEditingMeta(true)} style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: 12, color: "var(--text-muted)" }}>✎</button>
               </div>
               <span style={{ fontSize: 9, color: CATEGORY_COLORS[note.category]?.text, background: CATEGORY_COLORS[note.category]?.bg, padding: "2px 6px", borderRadius: 4, fontWeight: 700 }}>
                 {note.category}
@@ -213,7 +213,7 @@ export default function BookNoteView({ note, onUpdate, isExpanded, setIsExpanded
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <button 
             onClick={() => setIsExpanded(!isExpanded)}
-            style={{ background: "none", border: "1px solid #cbd5e1", borderRadius: 6, color: "#475569", fontSize: 11, fontWeight: 700, cursor: "pointer", padding: "4px 10px" }}
+            style={{ background: "none", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text-muted)", fontSize: 11, fontWeight: 700, cursor: "pointer", padding: "4px 10px" }}
           >
             {isExpanded ? "Collapse" : "Expand"}
           </button>
@@ -228,15 +228,15 @@ export default function BookNoteView({ note, onUpdate, isExpanded, setIsExpanded
 
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
         {/* Chapters Sidebar */}
-        <div style={{ width: 240, borderRight: "1px solid #E8E6E0", background: "#f8fafc", display: "flex", flexDirection: "column" }}>
-          <div style={{ padding: "12px", borderBottom: "1px solid #E8E6E0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#475569" }}>Table of Contents</span>
-            <button onClick={handleAddChapter} style={{ background: "transparent", border: "1px solid #cbd5e1", padding: "2px 6px", borderRadius: 4, cursor: "pointer", fontSize: 11, color: "#1e293b", fontWeight: 700 }}>+ Chapter</button>
+        <div style={{ width: 240, borderRight: "1px solid var(--border)", background: "var(--bg-sidebar)", display: "flex", flexDirection: "column" }}>
+          <div style={{ padding: "12px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted)" }}>Table of Contents</span>
+            <button onClick={handleAddChapter} style={{ background: "transparent", border: "1px solid var(--border)", padding: "2px 6px", borderRadius: 4, cursor: "pointer", fontSize: 11, color: "var(--text-main)", fontWeight: 700 }}>+ Chapter</button>
           </div>
           <div style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
             {note.chapters?.map((c, idx) => (
               <div key={c.id} style={{ marginBottom: 12 }}>
-                <div style={{ padding: "4px 12px", fontSize: 12, fontWeight: 700, color: "#1e293b", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ padding: "4px 12px", fontSize: 12, fontWeight: 700, color: "var(--text-main)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   {editingChapterId === c.id ? (
                     <div style={{ display: "flex", gap: 4, alignItems: "center", flex: 1, marginRight: 8 }}>
                       <input 
@@ -258,8 +258,8 @@ export default function BookNoteView({ note, onUpdate, isExpanded, setIsExpanded
                         placeholder="Chapter Title"
                         style={{ ...inpStyle, fontSize: 11, padding: "2px 6px", height: 22 }}
                       />
-                      <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleSaveChapter(c.id); }} style={{ background: "#059669", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 10, padding: "2px 6px" }}>Save</button>
-                      <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditingChapterId(null); }} style={{ background: "#ef4444", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 10, padding: "2px 6px" }}>Cancel</button>
+                      <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleSaveChapter(c.id); }} style={{ background: "#059669", color: "var(--btn-text)", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 10, padding: "2px 6px" }}>Save</button>
+                      <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditingChapterId(null); }} style={{ background: "#ef4444", color: "var(--btn-text)", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 10, padding: "2px 6px" }}>Cancel</button>
                     </div>
                   ) : (
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -270,11 +270,11 @@ export default function BookNoteView({ note, onUpdate, isExpanded, setIsExpanded
                       >
                         {idx + 1}. {c.title}
                       </span>
-                      <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditingChapterId(c.id); setEditChapterTitle(c.title); }} style={{ background: "#f1f5f9", border: "1px solid #cbd5e1", borderRadius: 4, cursor: "pointer", fontSize: 9, color: "#475569", padding: "2px 6px" }}>Edit</button>
+                      <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditingChapterId(c.id); setEditChapterTitle(c.title); }} style={{ background: "var(--bg-card-hover)", border: "1px solid var(--border)", borderRadius: 4, cursor: "pointer", fontSize: 9, color: "var(--text-muted)", padding: "2px 6px" }}>Edit</button>
                     </div>
                   )}
                   {editingChapterId !== c.id && (
-                    <button onClick={() => handleAddPage(c.id)} style={{ background: "transparent", border: "none", color: "#3b82f6", cursor: "pointer", fontSize: 11 }}>+ Page</button>
+                    <button onClick={() => handleAddPage(c.id)} style={{ background: "transparent", border: "none", color: "var(--link-color)", cursor: "pointer", fontSize: 11 }}>+ Page</button>
                   )}
                 </div>
                 <div>
@@ -288,10 +288,10 @@ export default function BookNoteView({ note, onUpdate, isExpanded, setIsExpanded
                           padding: "6px 12px 6px 28px",
                           fontSize: 12,
                           cursor: "pointer",
-                          background: isActive ? "#e0e7ff" : "transparent",
-                          color: isActive ? "#4338ca" : "#475569",
+                          background: isActive ? "var(--active-bg)" : "transparent",
+                          color: isActive ? "var(--active-text)" : "var(--text-muted)",
                           fontWeight: isActive ? 600 : 400,
-                          borderLeft: isActive ? "3px solid #4338ca" : "3px solid transparent",
+                          borderLeft: isActive ? "3px solid var(--active-text)" : "3px solid transparent",
                         }}
                       >
                         📄 {p.title}
@@ -311,11 +311,11 @@ export default function BookNoteView({ note, onUpdate, isExpanded, setIsExpanded
         </div>
 
         {/* Page Content Area */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: "#fff", padding: 24, boxSizing: "border-box" }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: "var(--bg-card)", padding: 24, boxSizing: "border-box" }}>
           {!activePage ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", color: "#94a3b8", textAlign: "center" }}>
               <span style={{ fontSize: 48, marginBottom: 12 }}>📖</span>
-              <h3 style={{ margin: 0, color: "#475569" }}>Select a page</h3>
+              <h3 style={{ margin: 0, color: "var(--text-muted)" }}>Select a page</h3>
               <p style={{ fontSize: 13, maxWidth: 300, margin: "8px 0 0 0", lineHeight: 1.5 }}>
                 Choose a page from the table of contents or create a new one to start writing.
               </p>
@@ -325,7 +325,7 @@ export default function BookNoteView({ note, onUpdate, isExpanded, setIsExpanded
               // Edit view
               <div style={{ display: "flex", flexDirection: "column", gap: 14, height: "100%", maxWidth: "100%" }}>
                 <div>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", display: "block", marginBottom: 4 }}>Page Title</label>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Page Title</label>
                   <input 
                     value={editTitle}
                     onChange={e => setEditTitle(e.target.value)}
@@ -336,10 +336,10 @@ export default function BookNoteView({ note, onUpdate, isExpanded, setIsExpanded
 
                 <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b" }}>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)" }}>
                       Content (Markdown Supported)
                     </label>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", cursor: "pointer", background: "#f1f5f9", padding: "4px 8px", borderRadius: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", cursor: "pointer", background: "var(--bg-card-hover)", padding: "4px 8px", borderRadius: 4, display: "flex", alignItems: "center", gap: 4 }}>
                       <span>{isUploading ? "⏳ Uploading..." : "🖼️ Insert Image"}</span>
                       <input type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageUpload} disabled={isUploading} />
                     </label>
@@ -349,23 +349,23 @@ export default function BookNoteView({ note, onUpdate, isExpanded, setIsExpanded
                     value={editText}
                     onChange={e => setEditText(e.target.value)}
                     placeholder="Write notes using markdown..."
-                    style={{ width: "100%", flex: 1, minHeight: 280, border: "1px solid #cbd5e1", borderRadius: 8, padding: 16, fontSize: 13, fontFamily: "monospace", lineHeight: 1.6, outline: "none", boxSizing: "border-box", resize: "vertical" }}
+                    style={{ width: "100%", flex: 1, minHeight: 280, border: "1px solid var(--border)", borderRadius: 8, padding: 16, fontSize: 13, fontFamily: "monospace", lineHeight: 1.6, outline: "none", boxSizing: "border-box", resize: "vertical" }}
                   />
                 </div>
 
                 <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                  <button onClick={handleSavePage} style={{ padding: "8px 20px", borderRadius: 6, background: "#1e293b", color: "#fff", border: "none", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Save Page</button>
-                  <button onClick={() => setIsEditingPage(false)} style={{ padding: "8px 20px", borderRadius: 6, border: "1px solid #cbd5e1", background: "transparent", fontSize: 12, color: "#475569", cursor: "pointer" }}>Cancel</button>
+                  <button onClick={handleSavePage} style={{ padding: "8px 20px", borderRadius: 6, background: "var(--btn-bg)", color: "var(--btn-text)", border: "none", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Save Page</button>
+                  <button onClick={() => setIsEditingPage(false)} style={{ padding: "8px 20px", borderRadius: 6, border: "1px solid var(--border)", background: "transparent", fontSize: 12, color: "var(--text-muted)", cursor: "pointer" }}>Cancel</button>
                 </div>
               </div>
             ) : (
               // Rendered Preview view
               <div style={{ maxWidth: "100%", height: "100%", overflowY: "auto", paddingRight: 10 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, borderBottom: "1px solid #f1f5f9", paddingBottom: 10 }}>
-                  <h1 style={{ margin: 0, fontSize: "1.8em", fontWeight: 800, color: "#0f172a" }}>
+                  <h1 style={{ margin: 0, fontSize: "1.8em", fontWeight: 800, color: "var(--text-main)" }}>
                     {activePage.title || "Untitled Page"}
                   </h1>
-                  <button onClick={() => setIsEditingPage(true)} style={{ padding: "4px 12px", background: "#1e293b", color: "#fff", border: "none", borderRadius: 4, fontSize: 12, cursor: "pointer" }}>Edit Page</button>
+                  <button onClick={() => setIsEditingPage(true)} style={{ padding: "4px 12px", background: "var(--btn-bg)", color: "var(--btn-text)", border: "none", borderRadius: 4, fontSize: 12, cursor: "pointer" }}>Edit Page</button>
                 </div>
                 <div style={{ paddingBottom: 40 }}>
                   <MarkdownRenderer text={activePage.text} />

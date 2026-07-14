@@ -61,10 +61,10 @@ const MINDSET_CHECKS = [
 ];
 
 const BADGE_COLORS = {
-  cloud: { bg: "#E6F1FB", text: "#185FA5" },
-  depth: { bg: "#E1F5EE", text: "#085041" },
-  visibility: { bg: "#FAEEDA", text: "#854F0B" },
-  leadership: { bg: "#EEEDFE", text: "#3C3489" },
+  cloud: { bg: "var(--badge-cloud-bg)", text: "var(--badge-cloud-text)" },
+  depth: { bg: "var(--badge-depth-bg)", text: "var(--badge-depth-text)" },
+  visibility: { bg: "var(--badge-vis-bg)", text: "var(--badge-vis-text)" },
+  leadership: { bg: "var(--badge-lead-bg)", text: "var(--badge-lead-text)" },
 };
 
 const CATEGORY_ORDER = ["Core CS", "Design", "Java", "Architecture", "Data", "Cloud & Infra", "Messaging & Cache"];
@@ -380,23 +380,23 @@ async function apiPut(path, body) {
 // ─── Shared UI primitives ─────────────────────────────────────
 function CheckBox({ done, size = 20, circle = false }) {
   return (
-    <div style={{ width: size, height: size, borderRadius: circle ? "50%" : 5, border: done ? "none" : "1.5px solid #ccc", background: done ? "#1D9E75" : "transparent", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}>
-      {done && <svg width={size * .58} height={size * .58} viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+    <div style={{ width: size, height: size, borderRadius: circle ? "50%" : 5, border: done ? "none" : "1.5px solid var(--border)", background: done ? "#1D9E75" : "transparent", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s" }}>
+      {done && <svg width={size * .58} height={size * .58} viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="var(--bg-card)" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>}
     </div>
   );
 }
 function PBar({ value, max, color = "#7F77DD", h = 5 }) {
   const p = max > 0 ? Math.min(100, Math.round((value / max) * 100)) : 0;
-  return <div style={{ height: h, background: "#F0EEE8", borderRadius: h / 2, overflow: "hidden" }}><div style={{ height: "100%", width: p + "%", background: color, borderRadius: h / 2, transition: "width .4s" }} /></div>;
+  return <div style={{ height: h, background: "var(--bg-app)", borderRadius: h / 2, overflow: "hidden" }}><div style={{ height: "100%", width: p + "%", background: color, borderRadius: h / 2, transition: "width .4s" }} /></div>;
 }
 function Card({ children, style = {} }) {
-  return <div style={{ background: "#fff", border: "1px solid #E8E6E0", borderRadius: 12, padding: "14px 16px", ...style }}>{children}</div>;
+  return <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 12, padding: "14px 16px", ...style }}>{children}</div>;
 }
 function SLabel({ children, mt = 16 }) {
-  return <div style={{ fontSize: 11, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 8, marginTop: mt }}>{children}</div>;
+  return <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 8, marginTop: mt }}>{children}</div>;
 }
 function Badge({ type }) {
-  const c = BADGE_COLORS[type] || { bg: "#f0f0f0", text: "#555" };
+  const c = BADGE_COLORS[type] || { bg: "#f0f0f0", text: "var(--text-main)" };
   return <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 20, background: c.bg, color: c.text, textTransform: "uppercase", letterSpacing: ".04em", flexShrink: 0 }}>{type}</span>;
 }
 
@@ -451,15 +451,15 @@ function TodayView({ data, onUpdate }) {
       {/* Calendar grid */}
       <Card style={{ padding: "12px 14px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#555" }}>Progress Calendar</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--text-main)" }}>Progress Calendar</span>
           <div style={{ display: "flex", gap: 6 }}>
             <button onClick={() => setWeekOffset(w => Math.max(-currentWeek + 1, w - 1))} style={navBtn}>‹</button>
-            <span style={{ fontSize: 11, color: "#888", padding: "0 4px", alignSelf: "center" }}>Week {startWeek}</span>
+            <span style={{ fontSize: 11, color: "var(--text-muted)", padding: "0 4px", alignSelf: "center" }}>Week {startWeek}</span>
             <button onClick={() => setWeekOffset(w => Math.min(Math.ceil(totalDays / 7) - startWeek + 1, w + 1))} style={navBtn}>›</button>
           </div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 5 }}>
-          {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => <div key={i} style={{ fontSize: 10, color: "#bbb", textAlign: "center", fontWeight: 700 }}>{d}</div>)}
+          {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => <div key={i} style={{ fontSize: 10, color: "var(--text-muted)", textAlign: "center", fontWeight: 700 }}>{d}</div>)}
           {weekDays.map((d, i) => {
             if (!d) return <div key={i} />;
             const key = getDateKey(startDate, d);
@@ -470,14 +470,14 @@ function TodayView({ data, onUpdate }) {
             const isFuture = d > dayNumber;
             const dPh = getPhaseForDay(d, totalDays);
             const phColor = PHASES[dPh].color;
-            let bg = "#F7F6F3";
+            let bg = "var(--bg-app)";
             if (!isFuture && dDone > 0) { const r = dDone / allCurTasks.length; bg = r >= 1 ? "#1D9E75" : r >= 0.5 ? "#5DCAA5" : "#9FE1CB"; }
             return (
               <div key={d} onClick={() => setSelectedDay(d === dayNumber ? null : d)}
                 style={{
                   aspectRatio: "1", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: isSelected ? 700 : 500,
-                  background: isSelected ? "#1a1a1a" : bg,
-                  color: isSelected ? "#fff" : isFuture ? "#ddd" : dDone > 0 ? "#fff" : "#888",
+                  background: isSelected ? "var(--text-main)" : bg,
+                  color: isSelected ? "var(--bg-card)" : isFuture ? "var(--border)" : dDone > 0 ? "var(--bg-card)" : "var(--text-muted)",
                   border: isTodayDay && !isSelected ? `2px solid ${phColor}` : "none",
                   cursor: isFuture ? "default" : "pointer", transition: "all .15s"
                 }}>
@@ -494,11 +494,11 @@ function TodayView({ data, onUpdate }) {
           <div style={{ fontSize: 14, fontWeight: 700 }}>
             {isToday ? "Today" : formatDate(viewKey)} · Day {viewDay}
           </div>
-          <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>{ph} Focus · {allCurTasks.length} tasks</div>
+          <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>{ph} Focus · {allCurTasks.length} tasks</div>
         </div>
         <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: doneTasks === allCurTasks.length ? "#1D9E75" : "#1a1a1a" }}>{doneTasks}/{allCurTasks.length}</div>
-          <div style={{ fontSize: 11, color: "#aaa" }}>done</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: doneTasks === allCurTasks.length ? "#1D9E75" : "var(--text-main)" }}>{doneTasks}/{allCurTasks.length}</div>
+          <div style={{ fontSize: 11, color: "var(--text-muted)" }}>done</div>
         </div>
       </div>
       <PBar value={doneTasks} max={allCurTasks.length} color={doneTasks === allCurTasks.length ? "#1D9E75" : "#7F77DD"} h={6} />
@@ -510,14 +510,14 @@ function TodayView({ data, onUpdate }) {
           const done = !!dayData.tasks?.[task.id];
           return (
             <div key={task.id} onClick={() => toggleTask(task.id)}
-              style={{ background: "#fff", border: `1px solid ${done ? "#9FE1CB" : "#E8E6E0"}`, borderRadius: 10, padding: "12px 14px", cursor: "pointer", display: "flex", gap: 12, alignItems: "flex-start", userSelect: "none" }}>
+              style={{ background: "var(--bg-card)", border: `1px solid ${done ? "#9FE1CB" : "var(--border)"}`, borderRadius: 10, padding: "12px 14px", cursor: "pointer", display: "flex", gap: 12, alignItems: "flex-start", userSelect: "none" }}>
               <CheckBox done={done} />
               <div style={{ flex: 1 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: done ? "#aaa" : "#1a1a1a", textDecoration: done ? "line-through" : "none" }}>{task.label}</span>
-                  <span style={{ fontSize: 11, color: "#bbb", flexShrink: 0 }}>{task.duration}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: done ? "var(--text-muted)" : "var(--text-main)", textDecoration: done ? "line-through" : "none" }}>{task.label}</span>
+                  <span style={{ fontSize: 11, color: "var(--text-muted)", flexShrink: 0 }}>{task.duration}</span>
                 </div>
-                {task.detail && <div style={{ fontSize: 12, color: "#888", marginTop: 3, lineHeight: 1.5 }}>{task.detail}</div>}
+                {task.detail && <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3, lineHeight: 1.5 }}>{task.detail}</div>}
               </div>
             </div>
           );
@@ -531,9 +531,9 @@ function TodayView({ data, onUpdate }) {
           const done = !!dayData.checklist?.[item.id];
           return (
             <div key={item.id} onClick={() => toggleCheck(item.id)}
-              style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", cursor: "pointer", borderBottom: i < MINDSET_CHECKS.length - 1 ? "1px solid #F7F6F3" : "none", userSelect: "none" }}>
+              style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", cursor: "pointer", borderBottom: i < MINDSET_CHECKS.length - 1 ? "1px solid var(--bg-app)" : "none", userSelect: "none" }}>
               <CheckBox done={done} size={18} circle />
-              <span style={{ fontSize: 13, color: done ? "#aaa" : "#333", textDecoration: done ? "line-through" : "none" }}>{item.label}</span>
+              <span style={{ fontSize: 13, color: done ? "var(--text-muted)" : "var(--text-main)", textDecoration: done ? "line-through" : "none" }}>{item.label}</span>
               {done && <span style={{ marginLeft: "auto", fontSize: 11, color: "#1D9E75", fontWeight: 700 }}>✓</span>}
             </div>
           );
@@ -544,7 +544,7 @@ function TodayView({ data, onUpdate }) {
         const streak = calcStreak(data.days || {});
         if (streak >= 7) return <div style={{ background: "#E1F5EE", border: "1px solid #5DCAA5", borderRadius: 10, padding: "10px 14px", fontSize: 13, color: "#085041" }}>🔥 {streak}-day streak! Consistency is your competitive advantage.</div>;
         if (streak === 0 && doneTasks > 0) return <div style={{ background: "#EEEDFE", border: "1px solid #7F77DD", borderRadius: 10, padding: "10px 14px", fontSize: 13, color: "#3C3489" }}>Great start today! Build your streak tomorrow.</div>;
-        if (streak === 0) return <div style={{ background: "#FAEEDA", border: "1px solid #EF9F27", borderRadius: 10, padding: "10px 14px", fontSize: 13, color: "#633806" }}>Start your streak today. Every expert was once a beginner.</div>;
+        if (streak === 0) return <div style={{ background: "var(--warning-bg)", border: "1px solid var(--warning-text)", borderRadius: 10, padding: "10px 14px", fontSize: 13, color: "var(--warning-text)" }}>Start your streak today. Every expert was once a beginner.</div>;
         return null;
       })()}
     </div>
@@ -588,7 +588,7 @@ function PlanView({ data, onUpdate }) {
       {view === "abstract" && (
         <div>
           <Card style={{ marginBottom: 16 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#666", marginBottom: 8 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--text-muted)", marginBottom: 8 }}>
               <span style={{ fontWeight: 700 }}>Overall progress</span>
               <span>{doneTasks}/{totalTasks} tasks · {Math.round(doneTasks / totalTasks * 100)}%</span>
             </div>
@@ -602,22 +602,22 @@ function PlanView({ data, onUpdate }) {
               const isActive = mi === activeMonth;
               return (
                 <div key={mi} onClick={() => { setActiveMonth(mi); setActiveWeek(0); setView("detail"); }}
-                  style={{ background: "#fff", border: `2px solid ${isActive ? "#7F77DD" : "#E8E6E0"}`, borderRadius: 12, padding: "14px", cursor: "pointer", transition: "border-color .15s" }}>
+                  style={{ background: "var(--bg-card)", border: `2px solid ${isActive ? "#7F77DD" : "var(--border)"}`, borderRadius: 12, padding: "14px", cursor: "pointer", transition: "border-color .15s" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
                     <div>
-                      <div style={{ fontSize: 10, color: "#aaa", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".04em" }}>Month {pm.month}</div>
+                      <div style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".04em" }}>Month {pm.month}</div>
                       <div style={{ fontSize: 13, fontWeight: 700, marginTop: 2 }}>{pm.title}</div>
                     </div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: pmPct === 100 ? "#1D9E75" : pmPct > 0 ? "#7F77DD" : "#ddd" }}>{pmPct}%</div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: pmPct === 100 ? "#1D9E75" : pmPct > 0 ? "#7F77DD" : "var(--border)" }}>{pmPct}%</div>
                   </div>
                   <PBar value={pmDone} max={pmTotal} color={pmPct === 100 ? "#1D9E75" : "#7F77DD"} h={4} />
-                  <div style={{ fontSize: 11, color: "#aaa", marginTop: 6 }}>{pmDone}/{pmTotal} tasks · {pm.weeks.length} weeks</div>
+                  <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 6 }}>{pmDone}/{pmTotal} tasks · {pm.weeks.length} weeks</div>
                   {/* Week dots */}
                   <div style={{ display: "flex", gap: 4, marginTop: 8 }}>
                     {pm.weeks.map((wk, wi) => {
                       const wkDone = wk.tasks.filter(t => t.done).length;
                       const wkPct = wkDone / wk.tasks.length;
-                      return <div key={wi} style={{ flex: 1, height: 4, borderRadius: 2, background: wkPct >= 1 ? "#1D9E75" : wkPct > 0 ? "#5DCAA5" : "#F0EEE8" }} />;
+                      return <div key={wi} style={{ flex: 1, height: 4, borderRadius: 2, background: wkPct >= 1 ? "#1D9E75" : wkPct > 0 ? "#5DCAA5" : "var(--bg-app)" }} />;
                     })}
                   </div>
                 </div>
@@ -638,7 +638,7 @@ function PlanView({ data, onUpdate }) {
               const pmPct = Math.round(pmDone / pmTotal * 100);
               return (
                 <button key={mi} onClick={() => { setActiveMonth(mi); setActiveWeek(0); }}
-                  style={{ fontSize: 11, padding: "5px 12px", borderRadius: 20, border: activeMonth === mi ? "1px solid #1a1a1a" : "1px solid #ddd", background: activeMonth === mi ? "#1a1a1a" : "transparent", color: activeMonth === mi ? "#fff" : "#555", cursor: "pointer" }}>
+                  style={{ fontSize: 11, padding: "5px 12px", borderRadius: 20, border: activeMonth === mi ? "1px solid var(--text-main)" : "1px solid var(--border)", background: activeMonth === mi ? "var(--text-main)" : "transparent", color: activeMonth === mi ? "var(--bg-card)" : "var(--text-main)", cursor: "pointer" }}>
                   M{pm.month} · {pmPct}%
                 </button>
               );
@@ -646,16 +646,16 @@ function PlanView({ data, onUpdate }) {
           </div>
 
           {/* Month header */}
-          <div style={{ background: "#F7F6F3", border: "1px solid #E8E6E0", borderRadius: 12, padding: "14px 16px", marginBottom: 14 }}>
-            <div style={{ fontSize: 10, color: "#aaa", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 4 }}>Month {m.month} of 6</div>
+          <div style={{ background: "var(--bg-app)", border: "1px solid var(--border)", borderRadius: 12, padding: "14px 16px", marginBottom: 14 }}>
+            <div style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 4 }}>Month {m.month} of 6</div>
             <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 6 }}>{m.title}</div>
-            <div style={{ fontSize: 13, color: "#555", lineHeight: 1.6, marginBottom: 10 }}>{m.focus}</div>
-            <div style={{ background: "#fff", border: "1px solid #E8E6E0", borderRadius: 8, padding: "10px 12px" }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#aaa", textTransform: "uppercase", marginBottom: 4 }}>Month-end milestone</div>
-              <div style={{ fontSize: 13, color: "#333", lineHeight: 1.5 }}>{m.milestone}</div>
+            <div style={{ fontSize: 13, color: "var(--text-main)", lineHeight: 1.6, marginBottom: 10 }}>{m.focus}</div>
+            <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 12px" }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 4 }}>Month-end milestone</div>
+              <div style={{ fontSize: 13, color: "var(--text-main)", lineHeight: 1.5 }}>{m.milestone}</div>
             </div>
             <div style={{ marginTop: 10 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#888", marginBottom: 4 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>
                 <span>Month progress</span><span>{mDone}/{mTotal}</span>
               </div>
               <PBar value={mDone} max={mTotal} color={mDone === mTotal ? "#1D9E75" : "#7F77DD"} h={6} />
@@ -668,7 +668,7 @@ function PlanView({ data, onUpdate }) {
               const wkDone = wk.tasks.filter(t => t.done).length;
               return (
                 <button key={wi} onClick={() => setActiveWeek(wi)}
-                  style={{ fontSize: 11, padding: "5px 12px", borderRadius: 20, border: activeWeek === wi ? "1px solid #7F77DD" : "1px solid #ddd", background: activeWeek === wi ? "#EEEDFE" : "transparent", color: activeWeek === wi ? "#3C3489" : "#555", cursor: "pointer", fontWeight: activeWeek === wi ? 700 : 400 }}>
+                  style={{ fontSize: 11, padding: "5px 12px", borderRadius: 20, border: activeWeek === wi ? "1px solid #7F77DD" : "1px solid var(--border)", background: activeWeek === wi ? "#EEEDFE" : "transparent", color: activeWeek === wi ? "#3C3489" : "var(--text-main)", cursor: "pointer", fontWeight: activeWeek === wi ? 700 : 400 }}>
                   Week {wk.week} · {wkDone}/{wk.tasks.length}
                 </button>
               );
@@ -678,7 +678,7 @@ function PlanView({ data, onUpdate }) {
           {/* Week detail */}
           <Card style={{ marginBottom: 14 }}>
             <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>{w.title}</div>
-            <div style={{ fontSize: 12, color: "#888", marginBottom: 10 }}>{w.goal}</div>
+            <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 10 }}>{w.goal}</div>
             <PBar value={wDone} max={w.tasks.length} color={wDone === w.tasks.length ? "#1D9E75" : "#7F77DD"} h={4} />
           </Card>
 
@@ -686,14 +686,14 @@ function PlanView({ data, onUpdate }) {
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {w.tasks.map(task => (
               <div key={task.id} onClick={() => toggleTask(activeMonth, activeWeek, task.id)}
-                style={{ background: "#fff", border: `1px solid ${task.done ? "#9FE1CB" : "#E8E6E0"}`, borderRadius: 10, padding: "12px 14px", cursor: "pointer", display: "flex", gap: 12, alignItems: "flex-start", userSelect: "none" }}>
+                style={{ background: "var(--bg-card)", border: `1px solid ${task.done ? "#9FE1CB" : "var(--border)"}`, borderRadius: 10, padding: "12px 14px", cursor: "pointer", display: "flex", gap: 12, alignItems: "flex-start", userSelect: "none" }}>
                 <CheckBox done={task.done} />
                 <div style={{ flex: 1 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "flex-start" }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: task.done ? "#aaa" : "#1a1a1a", textDecoration: task.done ? "line-through" : "none", lineHeight: 1.4 }}>{task.title}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: task.done ? "var(--text-muted)" : "var(--text-main)", textDecoration: task.done ? "line-through" : "none", lineHeight: 1.4 }}>{task.title}</span>
                     <Badge type={task.badge} />
                   </div>
-                  <div style={{ fontSize: 12, color: "#888", marginTop: 5, lineHeight: 1.5 }}>{task.detail}</div>
+                  <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 5, lineHeight: 1.5 }}>{task.detail}</div>
                 </div>
               </div>
             ))}
@@ -758,9 +758,9 @@ function SkillsView({ skills, onSave }) {
       {/* Stats */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginBottom: 16 }}>
         {[{ v: totalSkills, l: "Total skills" }, { v: mastered, l: "Mastered" }, { v: avgProf + "%", l: "Avg proficiency" }].map((s, i) => (
-          <div key={i} style={{ background: "#fff", border: "1px solid #E8E6E0", borderRadius: 10, padding: "10px", textAlign: "center" }}>
+          <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 10, padding: "10px", textAlign: "center" }}>
             <div style={{ fontSize: 20, fontWeight: 700 }}>{s.v}</div>
-            <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>{s.l}</div>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>{s.l}</div>
           </div>
         ))}
       </div>
@@ -768,9 +768,9 @@ function SkillsView({ skills, onSave }) {
       {/* Filter + Add */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
         <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-          {cats.map(c => <button key={c} onClick={() => setFilterCat(c)} style={{ fontSize: 11, padding: "3px 9px", borderRadius: 20, border: filterCat === c ? "1px solid #1a1a1a" : "1px solid #ddd", background: filterCat === c ? "#1a1a1a" : "transparent", color: filterCat === c ? "#fff" : "#666", cursor: "pointer" }}>{c}</button>)}
+          {cats.map(c => <button key={c} onClick={() => setFilterCat(c)} style={{ fontSize: 11, padding: "3px 9px", borderRadius: 20, border: filterCat === c ? "1px solid var(--text-main)" : "1px solid var(--border)", background: filterCat === c ? "var(--text-main)" : "transparent", color: filterCat === c ? "var(--bg-card)" : "var(--text-muted)", cursor: "pointer" }}>{c}</button>)}
         </div>
-        <button onClick={() => setAddNew(true)} style={{ fontSize: 12, padding: "5px 14px", borderRadius: 20, border: "1px solid #1a1a1a", background: "#1a1a1a", color: "#fff", cursor: "pointer", fontWeight: 700 }}>+ Add skill</button>
+        <button onClick={() => setAddNew(true)} style={{ fontSize: 12, padding: "5px 14px", borderRadius: 20, border: "1px solid var(--text-main)", background: "var(--btn-bg)", color: "var(--btn-text)", cursor: "pointer", fontWeight: 700 }}>+ Add skill</button>
       </div>
 
       {/* Abstract: radar-like grid */}
@@ -784,14 +784,14 @@ function SkillsView({ skills, onSave }) {
                   const profColor = skill.proficiency >= skill.target ? "#1D9E75" : skill.proficiency >= 50 ? "#7F77DD" : "#D85A30";
                   const topicsDone = skill.topics.filter(t => skill.topicProgress?.[t]).length;
                   return (
-                    <div key={skill.id} onClick={() => setView("detail")} style={{ background: "#fff", border: `1px solid ${skill.color}40`, borderRadius: 10, padding: "10px 12px", cursor: "pointer" }}>
+                    <div key={skill.id} onClick={() => setView("detail")} style={{ background: "var(--bg-card)", border: `1px solid ${skill.color}40`, borderRadius: 10, padding: "10px 12px", cursor: "pointer" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                         <div style={{ width: 4, height: 4, borderRadius: "50%", background: skill.color, marginTop: 5 }} />
                         <span style={{ fontSize: 13, fontWeight: 700, color: profColor }}>{skill.proficiency}%</span>
                       </div>
                       <div style={{ fontSize: 12, fontWeight: 700, marginTop: 4, marginBottom: 6, lineHeight: 1.3 }}>{skill.name}</div>
                       <PBar value={skill.proficiency} max={100} color={profColor} h={3} />
-                      <div style={{ fontSize: 10, color: "#bbb", marginTop: 4 }}>{topicsDone}/{skill.topics.length} topics</div>
+                      <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 4 }}>{topicsDone}/{skill.topics.length} topics</div>
                     </div>
                   );
                 })}
@@ -834,21 +834,21 @@ function SkillCard({ skill, onEdit, onDelete, onToggle }) {
           <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
             <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <span style={{ fontSize: 14, fontWeight: 700 }}>{skill.name}</span>
-              <span style={{ fontSize: 10, color: "#bbb", background: "#F7F6F3", padding: "1px 6px", borderRadius: 8 }}>{skill.category}</span>
+              <span style={{ fontSize: 10, color: "var(--text-muted)", background: "var(--bg-app)", padding: "1px 6px", borderRadius: 8 }}>{skill.category}</span>
             </div>
             <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
               <span style={{ fontSize: 13, fontWeight: 700, color: profColor }}>{skill.proficiency}%</span>
-              <button onClick={onEdit} style={{ fontSize: 11, padding: "2px 7px", borderRadius: 6, border: "1px solid #ddd", background: "transparent", cursor: "pointer" }}>Edit</button>
+              <button onClick={onEdit} style={{ fontSize: 11, padding: "2px 7px", borderRadius: 6, border: "1px solid var(--border)", background: "transparent", cursor: "pointer", color: "var(--text-main)" }}>Edit</button>
             </div>
           </div>
           <div style={{ marginTop: 8 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#bbb", marginBottom: 4 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "var(--text-muted)", marginBottom: 4 }}>
               <span>{topicsDone}/{skill.topics.length} topics done</span>
               <span>Target: {skill.target}%</span>
             </div>
             <PBar value={skill.proficiency} max={100} color={profColor} h={5} />
           </div>
-          {skill.lastStudied && <div style={{ fontSize: 11, color: "#bbb", marginTop: 6 }}>Last studied: {skill.lastStudied}</div>}
+          {skill.lastStudied && <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 6 }}>Last studied: {skill.lastStudied}</div>}
           {skill.topics.length > 0 && (
             <button onClick={() => setExpanded(e => !e)} style={{ fontSize: 11, color: "#7F77DD", background: "transparent", border: "none", cursor: "pointer", marginTop: 8, padding: 0, fontWeight: 700 }}>
               {expanded ? "▲ Hide topics" : `▼ ${skill.topics.length} topics`}
@@ -860,9 +860,9 @@ function SkillCard({ skill, onEdit, onDelete, onToggle }) {
                 const done = !!skill.topicProgress?.[topic];
                 return (
                   <div key={topic} onClick={() => onToggle(topic)}
-                    style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 10px", background: done ? "#E1F5EE" : "#F7F6F3", borderRadius: 8, cursor: "pointer", userSelect: "none" }}>
+                    style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 10px", background: done ? "#E1F5EE" : "var(--bg-app)", borderRadius: 8, cursor: "pointer", userSelect: "none" }}>
                     <CheckBox done={done} size={16} circle />
-                    <span style={{ fontSize: 12, color: done ? "#085041" : "#333", textDecoration: done ? "line-through" : "none" }}>{topic}</span>
+                    <span style={{ fontSize: 12, color: done ? "#085041" : "var(--text-main)", textDecoration: done ? "line-through" : "none" }}>{topic}</span>
                   </div>
                 );
               })}
@@ -874,7 +874,7 @@ function SkillCard({ skill, onEdit, onDelete, onToggle }) {
                 {notesExpanded ? "▲ Hide notes" : "▼ Show notes"}
               </button>
               {notesExpanded && (
-                <div style={{ padding: "8px 12px", background: "#FAEEDA", borderRadius: 8, overflow: "hidden" }}>
+                <div style={{ padding: "8px 12px", background: "var(--warning-bg)", borderRadius: 8, overflow: "hidden" }}>
                   <MarkdownRenderer text={skill.notes} />
                 </div>
               )}
@@ -898,20 +898,20 @@ function SkillForm({ skill, onChange, onSave, onClose }) {
     <div>
       {[{ key: "name", label: "Skill name", ph: "e.g. Spring Boot" }, { key: "category", label: "Category", ph: "e.g. Java" }].map(f => (
         <div key={f.key} style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: "#555", marginBottom: 4 }}>{f.label}</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-main)", marginBottom: 4 }}>{f.label}</div>
           <input value={skill[f.key]} onChange={e => onChange(s => ({ ...s, [f.key]: e.target.value }))} placeholder={f.ph} style={inpStyle} />
         </div>
       ))}
       <div style={{ marginBottom: 12 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#555", marginBottom: 4 }}>Proficiency: {skill.proficiency}%</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-main)", marginBottom: 4 }}>Proficiency: {skill.proficiency}%</div>
         <input type="range" min="0" max="100" value={skill.proficiency} onChange={e => onChange(s => ({ ...s, proficiency: +e.target.value }))} style={{ width: "100%" }} />
       </div>
       <div style={{ marginBottom: 12 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#555", marginBottom: 4 }}>Target: {skill.target}%</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-main)", marginBottom: 4 }}>Target: {skill.target}%</div>
         <input type="range" min="0" max="100" value={skill.target} onChange={e => onChange(s => ({ ...s, target: +e.target.value }))} style={{ width: "100%" }} />
       </div>
       <div style={{ marginBottom: 12 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#555", marginBottom: 4 }}>Topics</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-main)", marginBottom: 4 }}>Topics</div>
         <div style={{ display: "flex", gap: 6, marginBottom: 6 }}>
           <input value={topicInput} onChange={e => setTopicInput(e.target.value)} onKeyDown={e => e.key === "Enter" && addTopic()} placeholder="Add topic, press Enter" style={{ ...inpStyle, flex: 1 }} />
           <button onClick={addTopic} style={smallBtn}>Add</button>
@@ -919,18 +919,18 @@ function SkillForm({ skill, onChange, onSave, onClose }) {
         <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
           {skill.topics.map(t => (
             <span key={t} style={{ fontSize: 12, background: "#E6F1FB", color: "#185FA5", padding: "2px 8px", borderRadius: 20, display: "flex", alignItems: "center", gap: 4 }}>
-              {t}<span onClick={() => onChange(s => ({ ...s, topics: s.topics.filter(x => x !== t) }))} style={{ cursor: "pointer", fontWeight: 700, color: "#888" }}>×</span>
+              {t}<span onClick={() => onChange(s => ({ ...s, topics: s.topics.filter(x => x !== t) }))} style={{ cursor: "pointer", fontWeight: 700, color: "var(--text-muted)" }}>×</span>
             </span>
           ))}
         </div>
       </div>
       <div style={{ marginBottom: 14 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#555", marginBottom: 4 }}>Notes</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-main)", marginBottom: 4 }}>Notes</div>
         <textarea value={skill.notes || ""} onChange={e => onChange(s => ({ ...s, notes: e.target.value }))} placeholder="Resources, blockers, tips..." style={{ ...inpStyle, minHeight: 60, resize: "vertical" }} />
       </div>
       <div style={{ display: "flex", gap: 8 }}>
-        <button onClick={onSave} disabled={!skill.name.trim()} style={{ flex: 1, padding: "10px", borderRadius: 10, border: "none", background: skill.name.trim() ? "#1a1a1a" : "#ccc", color: "#fff", fontSize: 14, fontWeight: 700, cursor: skill.name.trim() ? "pointer" : "default" }}>Save</button>
-        <button onClick={onClose} style={{ padding: "10px 18px", borderRadius: 10, border: "1px solid #ddd", background: "transparent", fontSize: 14, cursor: "pointer" }}>Cancel</button>
+        <button onClick={onSave} disabled={!skill.name.trim()} style={{ flex: 1, padding: "10px", borderRadius: 10, border: "none", background: skill.name.trim() ? "var(--text-main)" : "var(--border)", color: "var(--btn-text)", fontSize: 14, fontWeight: 700, cursor: skill.name.trim() ? "pointer" : "default" }}>Save</button>
+        <button onClick={onClose} style={{ padding: "10px 18px", borderRadius: 10, border: "1px solid var(--border)", background: "transparent", fontSize: 14, cursor: "pointer" }}>Cancel</button>
       </div>
     </div>
   );
@@ -985,7 +985,7 @@ function migrateLegacyNotes(notes) {
 
 // ─── MARKDOWN RENDERER ────────────────────────────────────────
 export function MarkdownRenderer({ text }) {
-  if (!text) return <div style={{ fontSize: 13, color: "#888", fontStyle: "italic" }}>No content yet. Click Edit to add some notes.</div>;
+  if (!text) return <div style={{ fontSize: 13, color: "var(--text-muted)", fontStyle: "italic" }}>No content yet. Click Edit to add some notes.</div>;
 
   // Step 1: Split raw text into alternating [text, code, text, code...] segments
   // Code blocks are extracted BEFORE any markdown processing runs, so no regex
@@ -1027,21 +1027,21 @@ export function MarkdownRenderer({ text }) {
     // Links
     html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
       const id = extractMap.length;
-      extractMap.push(`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #3C3489; text-decoration: underline; font-weight: 500;">${text}</a>`);
+      extractMap.push(`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: var(--link-color); text-decoration: underline; font-weight: 500;">${text}</a>`);
       return `@@EXTRACT${id}@@`;
     });
 
     // Inline code
-    html = html.replace(/`([^`]+)`/g, '<code style="background: #f1f0ea; padding: 2px 5px; border-radius: 4px; font-family: monospace; font-size: 0.9em; color: #d85a30;">$1</code>');
+    html = html.replace(/`([^`]+)`/g, '<code style="background: var(--bg-sidebar); padding: 2px 5px; border-radius: 4px; font-family: monospace; font-size: 0.9em; color: var(--code-color);">$1</code>');
     // Headings
-    html = html.replace(/^# (.*?)$/gm,   '<h1 style="font-size: 1.6em; margin: 24px 0 12px; font-weight: 800; border-bottom: 1px solid #eaeaea; padding-bottom: 6px; color: #1a1a1a;">$1</h1>');
-    html = html.replace(/^## (.*?)$/gm,  '<h2 style="font-size: 1.3em; margin: 20px 0 10px; font-weight: 700; border-bottom: 1px solid #f0f0f0; padding-bottom: 4px; color: #333;">$1</h2>');
-    html = html.replace(/^### (.*?)$/gm, '<h3 style="font-size: 1.1em; margin: 16px 0 8px; font-weight: 700; color: #444;">$1</h3>');
-    html = html.replace(/^#### (.*?)$/gm,'<h4 style="font-size: 1em; margin: 12px 0 6px; font-weight: 700; color: #555;">$1</h4>');
+    html = html.replace(/^# (.*?)$/gm,   '<h1 style="font-size: 1.6em; margin: 24px 0 12px; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 6px; color: var(--text-main);">$1</h1>');
+    html = html.replace(/^## (.*?)$/gm,  '<h2 style="font-size: 1.3em; margin: 20px 0 10px; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 4px; color: var(--text-main);">$1</h2>');
+    html = html.replace(/^### (.*?)$/gm, '<h3 style="font-size: 1.1em; margin: 16px 0 8px; font-weight: 700; color: var(--text-main);">$1</h3>');
+    html = html.replace(/^#### (.*?)$/gm,'<h4 style="font-size: 1em; margin: 12px 0 6px; font-weight: 700; color: var(--text-main);">$1</h4>');
     // HR
-    html = html.replace(/^---$/gm, '<hr style="border: 0; border-top: 1px solid #E6E4E0; margin: 20px 0;" />');
+    html = html.replace(/^---$/gm, '<hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;" />');
     // Blockquotes
-    html = html.replace(/^&gt;[ ]?(.*?)$/gm, '<blockquote style="border-left: 4px solid #7F77DD; padding-left: 12px; margin: 12px 0; color: #666; font-style: italic;">$1</blockquote>');
+    html = html.replace(/^&gt;[ ]?(.*?)$/gm, '<blockquote style="border-left: 4px solid #7F77DD; padding-left: 12px; margin: 12px 0; color: var(--text-muted); font-style: italic;">$1</blockquote>');
     // Bold & Italic
     html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
     html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
@@ -1060,10 +1060,10 @@ export function MarkdownRenderer({ text }) {
         else { tRows.push(parts); }
       } else {
         if (inTable) {
-          let th = '<div style="overflow-x:auto;margin:16px 0"><table style="width:100%;border-collapse:collapse;font-size:13px;text-align:left"><thead><tr style="border-bottom:2px solid #E6E4E0">';
-          tHeaders.forEach(h => { th += `<th style="padding:8px 12px;font-weight:700;background:#FAF9F6;border:1px solid #E6E4E0">${h}</th>`; });
+          let th = '<div style="overflow-x:auto;margin:16px 0"><table style="width:100%;border-collapse:collapse;font-size:13px;text-align:left"><thead><tr style="border-bottom:2px solid var(--border)">';
+          tHeaders.forEach(h => { th += `<th style="padding:8px 12px;font-weight:700;background:var(--bg-sidebar);border:1px solid var(--border)">${h}</th>`; });
           th += '</tr></thead><tbody>';
-          tRows.forEach(row => { th += '<tr style="border-bottom:1px solid #E6E4E0">'; row.forEach(c => { th += `<td style="padding:8px 12px;border:1px solid #E6E4E0">${c}</td>`; }); th += '</tr>'; });
+          tRows.forEach(row => { th += '<tr style="border-bottom:1px solid var(--border)">'; row.forEach(c => { th += `<td style="padding:8px 12px;border:1px solid var(--border)">${c}</td>`; }); th += '</tr>'; });
           th += '</tbody></table></div>';
           tParsed.push(th); inTable = false; tHeaders = []; tRows = [];
         }
@@ -1071,10 +1071,10 @@ export function MarkdownRenderer({ text }) {
       }
     }
     if (inTable) {
-      let th = '<div style="overflow-x:auto;margin:16px 0"><table style="width:100%;border-collapse:collapse;font-size:13px;text-align:left"><thead><tr style="border-bottom:2px solid #E6E4E0">';
-      tHeaders.forEach(h => { th += `<th style="padding:8px 12px;font-weight:700;background:#FAF9F6;border:1px solid #E6E4E0">${h}</th>`; });
+      let th = '<div style="overflow-x:auto;margin:16px 0"><table style="width:100%;border-collapse:collapse;font-size:13px;text-align:left"><thead><tr style="border-bottom:2px solid var(--border)">';
+      tHeaders.forEach(h => { th += `<th style="padding:8px 12px;font-weight:700;background:var(--bg-sidebar);border:1px solid var(--border)">${h}</th>`; });
       th += '</tr></thead><tbody>';
-      tRows.forEach(row => { th += '<tr style="border-bottom:1px solid #E6E4E0">'; row.forEach(c => { th += `<td style="padding:8px 12px;border:1px solid #E6E4E0">${c}</td>`; }); th += '</tr>'; });
+      tRows.forEach(row => { th += '<tr style="border-bottom:1px solid var(--border)">'; row.forEach(c => { th += `<td style="padding:8px 12px;border:1px solid var(--border)">${c}</td>`; }); th += '</tr>'; });
       th += '</tbody></table></div>';
       tParsed.push(th);
     }
@@ -1117,26 +1117,26 @@ export function MarkdownRenderer({ text }) {
   // Step 3: Render a code segment with HTML escaping only (no markdown)
   function renderCode(lang, content) {
     const esc = content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    return `<div style="background:#1e1e1e;color:#d4d4d4;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;overflow-x:auto;margin:16px 0;position:relative">${lang ? `<div style="position:absolute;top:4px;right:10px;font-size:10px;color:#888;text-transform:uppercase;font-weight:700">${lang}</div>` : ''}<pre style="margin:0;white-space:pre"><code>${esc}</code></pre></div>`;
+    return `<div style="background:#1e1e1e;color:#d4d4d4;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;overflow-x:auto;margin:16px 0;position:relative">${lang ? `<div style="position:absolute;top:4px;right:10px;font-size:10px;color:var(--text-muted);text-transform:uppercase;font-weight:700">${lang}</div>` : ''}<pre style="margin:0;white-space:pre"><code>${esc}</code></pre></div>`;
   }
 
   // Step 4: Map each segment through the right handler and join
   const finalHtml = segments.map(seg => seg.type === 'code' ? renderCode(seg.lang, seg.content) : processText(seg.content)).join('');
 
-  return <div dangerouslySetInnerHTML={{ __html: finalHtml }} style={{ color: "#333", fontSize: "14px", lineHeight: "1.7" }} />;
+  return <div dangerouslySetInnerHTML={{ __html: finalHtml }} style={{ color: "var(--text-main)", fontSize: "14px", lineHeight: "1.7" }} />;
 }
 
 // ─── REDESIGNED NOTES VIEW ────────────────────────────────────
 export const NOTE_CATEGORIES = ["All Categories", "System Design", "Microservices", "Design Patterns", "JAVA", "Core CS & DSA", "General", "Daily Logs"];
 
 export const CATEGORY_COLORS = {
-  "System Design": { text: "#d97706", bg: "#fef3c7" },
-  "Microservices": { text: "#4f46e5", bg: "#e0e7ff" },
-  "Design Patterns": { text: "#0d9488", bg: "#ccfbf1" },
-  "JAVA": { text: "#105412", bg: "#fef2e6" },
-  "Core CS & DSA": { text: "#7c3aed", bg: "#f3e8ff" },
-  "General": { text: "#475569", bg: "#f1f5f9" },
-  "Daily Logs": { text: "#059669", bg: "#d1fae5" }
+  "System Design": { text: "var(--cat-sys-text)", bg: "var(--cat-sys-bg)" },
+  "Microservices": { text: "var(--cat-micro-text)", bg: "var(--cat-micro-bg)" },
+  "Design Patterns": { text: "var(--cat-dp-text)", bg: "var(--cat-dp-bg)" },
+  "JAVA": { text: "var(--cat-java-text)", bg: "var(--cat-java-bg)" },
+  "Core CS & DSA": { text: "var(--cat-core-text)", bg: "var(--cat-core-bg)" },
+  "General": { text: "var(--cat-gen-text)", bg: "var(--cat-gen-bg)" },
+  "Daily Logs": { text: "var(--cat-daily-text)", bg: "var(--cat-daily-bg)" }
 };
 
 function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
@@ -1368,41 +1368,41 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
   return (
     <div>
       {/* Pinned thought box (top level container) */}
-      <Card style={{ marginBottom: 18, borderLeft: "3px solid #EF9F27", borderRadius: "0 12px 12px 0", background: "#fff", padding: "14px 18px" }}>
+      <Card style={{ marginBottom: 18, borderLeft: "3px solid var(--warning-text)", borderRadius: "0 12px 12px 0", background: "var(--bg-card)", padding: "14px 18px" }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: "#854F0B", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 6, display: "flex", alignItems: "center", gap: 6 }}>
           <span>📌 Pinned board</span>
-          <span style={{ fontSize: 10, color: "#888", fontWeight: 400, textTransform: "none" }}>(Auto-saves)</span>
+          <span style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 400, textTransform: "none" }}>(Auto-saves)</span>
         </div>
         <textarea 
           value={pinnedText} 
           onChange={e => handleSavePinned(e.target.value)} 
           placeholder="Pin important thoughts, reminders, formulas, or a goal for the week..." 
-          style={{ width: "100%", minHeight: 45, border: "none", outline: "none", background: "transparent", fontSize: 13, color: "#333", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, boxSizing: "border-box" }} 
+          style={{ width: "100%", minHeight: 45, border: "none", outline: "none", background: "transparent", fontSize: 13, color: "var(--text-main)", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, boxSizing: "border-box" }} 
         />
       </Card>
       <div style={isExpanded ? {
         position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999,
-        display: "flex", background: "#fff", overflow: "hidden"
+        display: "flex", background: "var(--bg-card)", overflow: "hidden"
       } : {
-        display: "flex", gap: 20, height: "calc(100vh - 220px)", minHeight: 520, background: "#fff", border: "1px solid #E8E6E0", borderRadius: 12, overflow: "hidden", boxShadow: "0 4px 20px -2px rgba(0, 0, 0, 0.05)"
+        display: "flex", gap: 20, height: "calc(100vh - 220px)", minHeight: 520, background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden", boxShadow: "0 4px 20px -2px rgba(0, 0, 0, 0.05)"
       }}>
         
         {/* Left Pane - Sidebar */}
         {!isExpanded && (
-        <div style={{ width: 280, borderRight: "1px solid #E8E6E0", display: "flex", flexDirection: "column", background: "#FAF9F6" }}>
+        <div style={{ width: 280, borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", background: "var(--bg-sidebar)" }}>
           
           {/* Sidebar Header: Categories list */}
-          <div style={{ padding: "12px 12px 6px 12px", borderBottom: "1px solid #E8E6E0" }}>
+          <div style={{ padding: "12px 12px 6px 12px", borderBottom: "1px solid var(--border)" }}>
             <input 
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search notes & logs..."
-              style={{ ...inpStyle, fontSize: 12, padding: "6px 10px", borderRadius: 6, background: "#fff" }}
+              style={{ ...inpStyle, fontSize: 12, padding: "6px 10px", borderRadius: 6, background: "var(--bg-card)" }}
             />
           </div>
 
           {/* Category Tabs */}
-          <div style={{ padding: "8px 8px 4px 8px", display: "flex", flexDirection: "column", gap: 2, borderBottom: "1px solid #E8E6E0" }}>
+          <div style={{ padding: "8px 8px 4px 8px", display: "flex", flexDirection: "column", gap: 2, borderBottom: "1px solid var(--border)" }}>
             {NOTE_CATEGORIES.map(cat => {
               const active = activeCategory === cat;
               return (
@@ -1427,7 +1427,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                     <span>{getCategoryIcon(cat)}</span>
                     <span>{cat}</span>
                   </span>
-                  <span style={{ fontSize: 10, background: active ? "#fff" : "#e2e8f0", padding: "1px 6px", borderRadius: 10, color: "#475569" }}>
+                  <span style={{ fontSize: 10, background: active ? "var(--bg-card)" : "var(--border)", padding: "1px 6px", borderRadius: 10, color: "var(--text-muted)" }}>
                     {getCategoryCount(cat)}
                   </span>
                 </div>
@@ -1443,8 +1443,8 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                   <div 
                     onClick={() => { setSelectedId("journal"); }}
                     style={{
-                      background: selectedId === "journal" ? "#fff" : "transparent",
-                      border: selectedId === "journal" ? "1px solid #E8E6E0" : "1px solid transparent",
+                      background: selectedId === "journal" ? "var(--bg-card)" : "transparent",
+                      border: selectedId === "journal" ? "1px solid var(--border)" : "1px solid transparent",
                       padding: "10px 12px",
                       borderRadius: 8,
                       cursor: "pointer",
@@ -1452,10 +1452,10 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                       boxShadow: selectedId === "journal" ? "0 2px 8px rgba(0,0,0,0.03)" : "none"
                     }}
                   >
-                    <div style={{ fontWeight: 700, fontSize: 12, color: "#1e293b", display: "flex", alignItems: "center", gap: 4 }}>
+                    <div style={{ fontWeight: 700, fontSize: 12, color: "var(--text-main)", display: "flex", alignItems: "center", gap: 4 }}>
                       <span>📓</span> Study Journal
                     </div>
-                    <div style={{ fontSize: 11, color: "#64748b", marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {journalText.substring(0, 45) || "Your ongoing study entries..."}
                     </div>
                   </div>
@@ -1469,8 +1469,8 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                       key={dateKey}
                       onClick={() => { setSelectedId("daily-" + dateKey); }}
                       style={{
-                        background: active ? "#fff" : "transparent",
-                        border: active ? "1px solid #E8E6E0" : "1px solid transparent",
+                        background: active ? "var(--bg-card)" : "transparent",
+                        border: active ? "1px solid var(--border)" : "1px solid transparent",
                         padding: "10px 12px",
                         borderRadius: 8,
                         cursor: "pointer",
@@ -1478,11 +1478,11 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                         boxShadow: active ? "0 2px 8px rgba(0,0,0,0.03)" : "none"
                       }}
                     >
-                      <div style={{ fontWeight: 700, fontSize: 12, color: "#1e293b", display: "flex", justifyContent: "space-between" }}>
+                      <div style={{ fontWeight: 700, fontSize: 12, color: "var(--text-main)", display: "flex", justifyContent: "space-between" }}>
                         <span>📅 {dateKey}</span>
-                        {isToday && <span style={{ fontSize: 9, background: "#e0f2fe", color: "#0369a1", padding: "1px 4px", borderRadius: 4 }}>Today</span>}
+                        {isToday && <span style={{ fontSize: 9, background: "var(--badge-cloud-bg)", color: "var(--badge-cloud-text)", padding: "1px 4px", borderRadius: 4 }}>Today</span>}
                       </div>
-                      <div style={{ fontSize: 11, color: "#64748b", marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {notes.length} log entries / {notes.map(n => n.text).join(", ").substring(0, 30)}
                       </div>
                     </div>
@@ -1504,8 +1504,8 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                       key={note.id}
                       onClick={() => { setSelectedId(note.id); }}
                       style={{
-                        background: active ? "#fff" : "transparent",
-                        border: active ? "1px solid #E8E6E0" : "1px solid transparent",
+                        background: active ? "var(--bg-card)" : "transparent",
+                        border: active ? "1px solid var(--border)" : "1px solid transparent",
                         padding: "10px 12px",
                         borderRadius: 8,
                         cursor: "pointer",
@@ -1515,12 +1515,12 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                       }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 4 }}>
-                        <div style={{ fontWeight: 700, fontSize: 12, color: "#1e293b", lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebKitLineClamp: 2, WebKitBoxOrient: "vertical", whiteSpace: "normal" }}>
+                        <div style={{ fontWeight: 700, fontSize: 12, color: "var(--text-main)", lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebKitLineClamp: 2, WebKitBoxOrient: "vertical", whiteSpace: "normal" }}>
                           {note.pinned && <span style={{ marginRight: 4 }}>📌</span>}
                           {note.title || "Untitled Note"}
                         </div>
                       </div>
-                      <div style={{ fontSize: 11, color: "#64748b", marginTop: 4, overflow: "hidden", display: "-webkit-box", WebKitLineClamp: 2, WebKitBoxOrient: "vertical", whiteSpace: "normal", lineHeight: 1.4 }}>
+                      <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4, overflow: "hidden", display: "-webkit-box", WebKitLineClamp: 2, WebKitBoxOrient: "vertical", whiteSpace: "normal", lineHeight: 1.4 }}>
                         {note.text ? note.text.replace(/#+ /g, "").substring(0, 90) : "No content."}
                       </div>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
@@ -1543,15 +1543,15 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
 
           {/* Sidebar Footer: Add button */}
           {activeCategory !== "Daily Logs" && (
-            <div style={{ padding: 12, borderTop: "1px solid #E8E6E0", background: "#f8fafc", display: "flex", gap: 8 }}>
+            <div style={{ padding: 12, borderTop: "1px solid var(--border)", background: "var(--bg-sidebar)", display: "flex", gap: 8 }}>
               <button 
                 onClick={handleCreateNote}
                 style={{ 
                   flex: 1, 
                   padding: "8px", 
                   borderRadius: 8, 
-                  background: "#1e293b", 
-                  color: "#fff", 
+                  background: "var(--btn-bg)", 
+                  color: "var(--btn-text)", 
                   border: "none", 
                   fontSize: 12, 
                   fontWeight: 700, 
@@ -1571,8 +1571,8 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                   flex: 1, 
                   padding: "8px", 
                   borderRadius: 8, 
-                  background: "#1e293b", 
-                  color: "#fff", 
+                  background: "var(--btn-bg)", 
+                  color: "var(--btn-text)", 
                   border: "none", 
                   fontSize: 12, 
                   fontWeight: 700, 
@@ -1604,17 +1604,17 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
             onDelete={() => handleDeleteNote(selectedNote.id)}
           />
         ) : (
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: "#fff" }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: "var(--bg-card)" }}>
           
           {/* Note View Header / Toolbar */}
           {selectedNote || isDailyLog ? (
-            <div style={{ padding: "12px 24px", borderBottom: "1px solid #E8E6E0", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FAF9F6", flexShrink: 0 }}>
+            <div style={{ padding: "12px 24px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg-sidebar)", flexShrink: 0 }}>
               
               {/* Left Side Metadata */}
               <div>
                 {isDailyLog ? (
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>📅 Logs: {dailyLogData.date}</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-main)" }}>📅 Logs: {dailyLogData.date}</span>
                     <span style={{ fontSize: 9, background: "#d1fae5", color: "#059669", padding: "2px 6px", borderRadius: 4, fontWeight: 700 }}>Daily Log</span>
                   </div>
                 ) : (
@@ -1629,7 +1629,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                           {selectedNote.pinned ? "📌" : "📍"}
                         </span>
                       )}
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text-main)" }}>
                         {selectedId === "journal" ? "Study Journal" : selectedNote.title || "Untitled"}
                       </span>
                     </div>
@@ -1648,9 +1648,9 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                   onClick={() => setIsExpanded(!isExpanded)}
                   style={{
                     background: "none",
-                    border: "1px solid #cbd5e1",
+                    border: "1px solid var(--border)",
                     borderRadius: 6,
-                    color: "#475569",
+                    color: "var(--text-muted)",
                     fontSize: 11,
                     fontWeight: 700,
                     cursor: "pointer",
@@ -1662,7 +1662,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                 </button>
                 {!isDailyLog && (
                   <>
-                    <div style={{ display: "flex", border: "1px solid #cbd5e1", borderRadius: 6, overflow: "hidden", background: "#fff" }}>
+                    <div style={{ display: "flex", border: "1px solid var(--border)", borderRadius: 6, overflow: "hidden", background: "var(--bg-card)" }}>
                       <button 
                         onClick={() => setIsEditing(false)} 
                         style={{ 
@@ -1671,7 +1671,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                           fontWeight: 700,
                           border: "none", 
                           background: !isEditing ? "#1e293b" : "transparent", 
-                          color: !isEditing ? "#fff" : "#475569", 
+                          color: !isEditing ? "var(--bg-card)" : "var(--text-muted)", 
                           cursor: "pointer" 
                         }}
                       >
@@ -1685,7 +1685,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                           fontWeight: 700,
                           border: "none", 
                           background: isEditing ? "#1e293b" : "transparent", 
-                          color: isEditing ? "#fff" : "#475569", 
+                          color: isEditing ? "var(--bg-card)" : "var(--text-muted)", 
                           cursor: "pointer" 
                         }}
                       >
@@ -1699,7 +1699,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                         style={{
                           background: "none",
                           border: "none",
-                          color: "#ef4444",
+                          color: "var(--danger-text)",
                           fontSize: 11,
                           fontWeight: 600,
                           cursor: "pointer",
@@ -1721,14 +1721,14 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
           <div style={{ flex: 1, overflowY: "auto", padding: 24, boxSizing: "border-box" }}>
             {isDailyLog ? (
               <div style={{ maxWidth: "100%" }}>
-                <h3 style={{ marginTop: 0, fontSize: 16, borderBottom: "2px solid #E8E6E0", paddingBottom: 8 }}>📝 Logs & Notes</h3>
+                <h3 style={{ marginTop: 0, fontSize: 16, borderBottom: "2px solid var(--border)", paddingBottom: 8 }}>📝 Logs & Notes</h3>
                 {dailyLogData.notes.length === 0 ? (
-                  <p style={{ fontSize: 13, color: "#64748b", fontStyle: "italic" }}>No log entries recorded for this day.</p>
+                  <p style={{ fontSize: 13, color: "var(--text-muted)", fontStyle: "italic" }}>No log entries recorded for this day.</p>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
                     {dailyLogData.notes.map(n => (
-                      <div key={n.id} style={{ background: "#f8fafc", padding: "12px 16px", borderRadius: 8, border: "1px solid #e2e8f0" }}>
-                        <div style={{ fontSize: 13, color: "#334155", lineHeight: 1.5 }}>{n.text}</div>
+                      <div key={n.id} style={{ background: "var(--bg-sidebar)", padding: "12px 16px", borderRadius: 8, border: "1px solid var(--border)" }}>
+                        <div style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5 }}>{n.text}</div>
                         <div style={{ fontSize: 10, color: "#94a3b8", marginTop: 4 }}>
                           {n.time === "Migrated" ? "Legacy Note" : new Date(n.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </div>
@@ -1737,15 +1737,15 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                   </div>
                 )}
 
-                <h3 style={{ fontSize: 16, borderBottom: "2px solid #E8E6E0", paddingBottom: 8, marginTop: 24 }}>🎯 Plan vs Reality Checklist</h3>
+                <h3 style={{ fontSize: 16, borderBottom: "2px solid var(--border)", paddingBottom: 8, marginTop: 24 }}>🎯 Plan vs Reality Checklist</h3>
                 {dailyLogData.plan.length === 0 ? (
-                  <p style={{ fontSize: 13, color: "#64748b", fontStyle: "italic" }}>No planning checklist targets set for this day.</p>
+                  <p style={{ fontSize: 13, color: "var(--text-muted)", fontStyle: "italic" }}>No planning checklist targets set for this day.</p>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     {dailyLogData.plan.map(p => (
-                      <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 10, background: p.achieved ? "#f0fdf4" : "#fff", padding: "8px 12px", borderRadius: 8, border: "1px solid #e2e8f0" }}>
+                      <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 10, background: p.achieved ? "var(--success-bg)" : "var(--bg-card)", padding: "8px 12px", borderRadius: 8, border: "1px solid var(--border)" }}>
                         <CheckBox done={p.achieved} size={16} />
-                        <span style={{ fontSize: 13, textDecoration: p.achieved ? "line-through" : "none", color: p.achieved ? "#166534" : "#334155" }}>
+                        <span style={{ fontSize: 13, textDecoration: p.achieved ? "line-through" : "none", color: p.achieved ? "var(--success-text)" : "var(--text-muted)" }}>
                           {p.text}
                         </span>
                       </div>
@@ -1761,7 +1761,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                   {selectedId !== "journal" && (
                     <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                       <div style={{ flex: 1, minWidth: 200 }}>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", display: "block", marginBottom: 4 }}>Note Title</label>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Note Title</label>
                         <input 
                           value={editTitle}
                           onChange={e => setEditTitle(e.target.value)}
@@ -1770,7 +1770,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                         />
                       </div>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", display: "block", marginBottom: 4 }}>Category</label>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Category</label>
                         <select 
                           value={editCategory}
                           onChange={e => setEditCategory(e.target.value)}
@@ -1786,12 +1786,12 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
 
                   <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b" }}>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)" }}>
                         Content (Markdown Supported)
                       </label>
                       <label style={{ 
-                        fontSize: 11, fontWeight: 700, color: "#475569", 
-                        cursor: "pointer", background: "#f1f5f9", padding: "4px 8px", borderRadius: 4, display: "flex", alignItems: "center", gap: 4
+                        fontSize: 11, fontWeight: 700, color: "var(--text-muted)", 
+                        cursor: "pointer", background: "var(--bg-card-hover)", padding: "4px 8px", borderRadius: 4, display: "flex", alignItems: "center", gap: 4
                       }}>
                         <span>{isUploading ? "⏳ Uploading..." : "🖼️ Insert Image"}</span>
                         <input type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageUpload} disabled={isUploading} />
@@ -1809,7 +1809,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                         width: "100%", 
                         flex: 1, 
                         minHeight: 280, 
-                        border: "1px solid #cbd5e1", 
+                        border: "1px solid var(--border)", 
                         borderRadius: 8, 
                         padding: 16, 
                         fontSize: 13, 
@@ -1825,13 +1825,13 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
                   <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                     <button 
                       onClick={handleSave}
-                      style={{ padding: "8px 20px", borderRadius: 6, background: "#1e293b", color: "#fff", border: "none", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+                      style={{ padding: "8px 20px", borderRadius: 6, background: "var(--btn-bg)", color: "var(--btn-text)", border: "none", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
                     >
                       Save Changes
                     </button>
                     <button 
                       onClick={() => setIsEditing(false)}
-                      style={{ padding: "8px 20px", borderRadius: 6, border: "1px solid #cbd5e1", background: "transparent", fontSize: 12, color: "#475569", cursor: "pointer" }}
+                      style={{ padding: "8px 20px", borderRadius: 6, border: "1px solid var(--border)", background: "transparent", fontSize: 12, color: "var(--text-muted)", cursor: "pointer" }}
                     >
                       Cancel
                     </button>
@@ -1844,14 +1844,14 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
               ) : (
                 // Rendered Preview view
                 <div style={{ maxWidth: "100%" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, borderBottom: "1px solid #f1f5f9", paddingBottom: 10 }}>
-                    <h1 style={{ margin: 0, fontSize: "1.8em", fontWeight: 800, color: "#0f172a" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, borderBottom: "1px solid var(--bg-card-hover)", paddingBottom: 10 }}>
+                    <h1 style={{ margin: 0, fontSize: "1.8em", fontWeight: 800, color: "var(--text-main)" }}>
                       {selectedId === "journal" ? "Study Journal" : selectedNote.title || "Untitled Note"}
                     </h1>
                   </div>
                   
                   {selectedId !== "journal" && (
-                    <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 20, fontSize: 12, color: "#64748b" }}>
+                    <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 20, fontSize: 12, color: "var(--text-muted)" }}>
                       <span style={{ background: CATEGORY_COLORS[selectedNote.category]?.bg, color: CATEGORY_COLORS[selectedNote.category]?.text, padding: "2px 8px", borderRadius: 4, fontWeight: 700 }}>
                         {selectedNote.category}
                       </span>
@@ -1869,7 +1869,7 @@ function NotesView({ data, onUpdate, selectedId, setSelectedId }) {
               // Empty State
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", color: "#94a3b8", textAlign: "center" }}>
                 <span style={{ fontSize: 48, marginBottom: 12 }}>📚</span>
-                <h3 style={{ margin: 0, color: "#475569" }}>Knowledge Hub</h3>
+                <h3 style={{ margin: 0, color: "var(--text-muted)" }}>Knowledge Hub</h3>
                 <p style={{ fontSize: 13, maxWidth: 300, margin: "8px 0 0 0", lineHeight: 1.5 }}>
                   Select a note from the left sidebar to read or edit, or create a new markdown note.
                 </p>
@@ -1922,16 +1922,16 @@ function HistoryView({ data, allTasks }) {
       {/* Stats */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginBottom: 16 }}>
         {[{ v: streak, l: "Current streak" }, { v: bestStreak, l: "Best streak" }, { v: totalDone, l: "Full days" }].map((s, i) => (
-          <div key={i} style={{ background: "#fff", border: "1px solid #E8E6E0", borderRadius: 10, padding: "10px", textAlign: "center" }}>
+          <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 10, padding: "10px", textAlign: "center" }}>
             <div style={{ fontSize: 20, fontWeight: 700 }}>{s.v}</div>
-            <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>{s.l}</div>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>{s.l}</div>
           </div>
         ))}
       </div>
 
       {/* Heatmap */}
       <Card style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#555", marginBottom: 8 }}>{totalDays}-day heatmap</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-main)", marginBottom: 8 }}>{totalDays}-day heatmap</div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
           {Array.from({ length: totalDays }, (_, i) => {
             const key = getDateKey(startDate, i + 1);
@@ -1939,14 +1939,14 @@ function HistoryView({ data, allTasks }) {
             const done = d ? Object.values(d.tasks || {}).filter(Boolean).length : 0;
             const isFuture = i + 1 > dayNumber;
             const isToday = key === todayKey;
-            let bg = "#F0EEE8";
+            let bg = "var(--bg-app)";
             if (!isFuture && done > 0) { const r = done / allTasks.length; bg = r >= 1 ? "#1D9E75" : r >= 0.5 ? "#5DCAA5" : "#9FE1CB"; }
             if (isToday) bg = "#7F77DD";
-            return <div key={i} title={`${formatDate(key)} (Day ${i + 1}): ${done} tasks`} style={{ width: 14, height: 14, borderRadius: 3, background: isFuture ? "#F7F6F3" : bg, border: isToday ? "2px solid #534AB7" : "none", opacity: isFuture ? 0.3 : 1 }} />;
+            return <div key={i} title={`${formatDate(key)} (Day ${i + 1}): ${done} tasks`} style={{ width: 14, height: 14, borderRadius: 3, background: isFuture ? "var(--bg-app)" : bg, border: isToday ? "2px solid #534AB7" : "none", opacity: isFuture ? 0.3 : 1 }} />;
           })}
         </div>
-        <div style={{ display: "flex", gap: 10, marginTop: 8, fontSize: 10, color: "#aaa" }}>
-          {[["#1D9E75", "Full"], ["#5DCAA5", "Partial"], ["#7F77DD", "Today"], ["#F0EEE8", "Missed"]].map(([c, l]) => (
+        <div style={{ display: "flex", gap: 10, marginTop: 8, fontSize: 10, color: "var(--text-muted)" }}>
+          {[["#1D9E75", "Full"], ["#5DCAA5", "Partial"], ["#7F77DD", "Today"], ["var(--bg-app)", "Missed"]].map(([c, l]) => (
             <span key={l} style={{ display: "flex", gap: 4, alignItems: "center" }}><span style={{ width: 10, height: 10, background: c, borderRadius: 2, display: "inline-block" }} />{l}</span>
           ))}
         </div>
@@ -1960,7 +1960,7 @@ function HistoryView({ data, allTasks }) {
         </div>
         <div style={{ display: "flex", gap: 4 }}>
           {[["all", "All"], ["full", "Full"], ["partial", "Partial"], ["missed", "Missed"]].map(([f, l]) => (
-            <button key={f} onClick={() => setFilter(f)} style={{ fontSize: 11, padding: "3px 9px", borderRadius: 20, border: filter === f ? "1px solid #1a1a1a" : "1px solid #ddd", background: filter === f ? "#1a1a1a" : "transparent", color: filter === f ? "#fff" : "#666", cursor: "pointer" }}>{l}</button>
+            <button key={f} onClick={() => setFilter(f)} style={{ fontSize: 11, padding: "3px 9px", borderRadius: 20, border: filter === f ? "1px solid var(--text-main)" : "1px solid var(--border)", background: filter === f ? "var(--text-main)" : "transparent", color: filter === f ? "var(--bg-card)" : "var(--text-muted)", cursor: "pointer" }}>{l}</button>
           ))}
         </div>
       </div>
@@ -1978,12 +1978,12 @@ function HistoryView({ data, allTasks }) {
               <Card key={wi} style={{ padding: "10px 14px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                   <span style={{ fontSize: 13, fontWeight: 700 }}>Week {wi + 1}</span>
-                  <span style={{ fontSize: 12, color: "#888" }}>{wDone} full · {wPartial} partial · {wTotal - wDone - wPartial} missed</span>
+                  <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{wDone} full · {wPartial} partial · {wTotal - wDone - wPartial} missed</span>
                 </div>
                 <PBar value={wPct} max={100} color={wPct >= 80 ? "#1D9E75" : wPct >= 40 ? "#7F77DD" : "#D85A30"} h={6} />
                 <div style={{ display: "flex", gap: 4, marginTop: 8 }}>
                   {weekDays.map(d => (
-                    <div key={d.day} style={{ flex: 1, height: 24, borderRadius: 5, background: d.done === d.total ? "#1D9E75" : d.done > 0 ? "#5DCAA5" : "#F0EEE8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: d.done > 0 ? "#fff" : "#bbb" }}>{d.day}</div>
+                    <div key={d.day} style={{ flex: 1, height: 24, borderRadius: 5, background: d.done === d.total ? "#1D9E75" : d.done > 0 ? "#5DCAA5" : "var(--bg-app)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: d.done > 0 ? "var(--bg-card)" : "var(--text-muted)" }}>{d.day}</div>
                   ))}
                 </div>
               </Card>
@@ -1996,7 +1996,7 @@ function HistoryView({ data, allTasks }) {
       {view === "detail" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {filtered.length === 0 ? (
-            <div style={{ textAlign: "center", color: "#aaa", fontSize: 13, padding: "24px 0" }}>No history yet.</div>
+            <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: 13, padding: "24px 0" }}>No history yet.</div>
           ) : filtered.map(d => {
             const ph = getPhaseForDay(d.day, totalDays); const ps = PHASES[ph];
             const dNotes = data.dailyNotes?.[d.key] || [];
@@ -2008,15 +2008,15 @@ function HistoryView({ data, allTasks }) {
                     <span style={{ fontSize: 10, color: ps.text, background: ps.bg, padding: "1px 6px", borderRadius: 10, fontWeight: 700 }}>{ph}</span>
                   </div>
                   <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: d.done === d.total ? "#1D9E75" : d.done > 0 ? "#7F77DD" : "#ddd" }}>{d.done}/{d.total}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: d.done === d.total ? "#1D9E75" : d.done > 0 ? "#7F77DD" : "var(--border)" }}>{d.done}/{d.total}</div>
                   </div>
                 </div>
                 <div style={{ marginTop: 8 }}><PBar value={d.done} max={d.total} color={d.done === d.total ? "#1D9E75" : "#7F77DD"} h={4} /></div>
                 {dNotes.length > 0 && (
-                  <div style={{ fontSize: 12, color: "#555", marginTop: 8, borderTop: "1px solid #F7F6F3", paddingTop: 8, display: "flex", flexDirection: "column", gap: 4 }}>
+                  <div style={{ fontSize: 12, color: "var(--text-main)", marginTop: 8, borderTop: "1px solid var(--bg-app)", paddingTop: 8, display: "flex", flexDirection: "column", gap: 4 }}>
                     {dNotes.map(n => (
                       <div key={n.id} style={{ display: "flex", gap: 8 }}>
-                        <span style={{ color: "#aaa", fontSize: 10, alignSelf: "center" }}>•</span>
+                        <span style={{ color: "var(--text-muted)", fontSize: 10, alignSelf: "center" }}>•</span>
                         <span>{n.text}</span>
                       </div>
                     ))}
@@ -2044,17 +2044,17 @@ function TasksView({ customTasks, onSave, onReset }) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
         <SLabel mt={0}>Daily practice tasks</SLabel>
-        <button onClick={() => setEditTask({ id: "__new__", label: "", category: "", duration: "", detail: "" })} style={{ fontSize: 12, padding: "5px 14px", borderRadius: 20, border: "1px solid #1a1a1a", background: "#1a1a1a", color: "#fff", cursor: "pointer", fontWeight: 700 }}>+ Add task</button>
+        <button onClick={() => setEditTask({ id: "__new__", label: "", category: "", duration: "", detail: "" })} style={{ fontSize: 12, padding: "5px 14px", borderRadius: 20, border: "1px solid var(--text-main)", background: "var(--btn-bg)", color: "var(--btn-text)", cursor: "pointer", fontWeight: 700 }}>+ Add task</button>
       </div>
       <SLabel mt={0}>Default (always on)</SLabel>
       <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
         {DEFAULT_TASKS.map(t => (
           <Card key={t.id} style={{ padding: "10px 14px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <div><div style={{ fontSize: 13, fontWeight: 700 }}>{t.label}</div><div style={{ fontSize: 12, color: "#888", marginTop: 3 }}>{t.detail}</div></div>
-              <span style={{ fontSize: 11, color: "#aaa", marginLeft: 10, flexShrink: 0 }}>{t.duration}</span>
+              <div><div style={{ fontSize: 13, fontWeight: 700 }}>{t.label}</div><div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3 }}>{t.detail}</div></div>
+              <span style={{ fontSize: 11, color: "var(--text-muted)", marginLeft: 10, flexShrink: 0 }}>{t.duration}</span>
             </div>
-            <div style={{ fontSize: 10, color: "#bbb", marginTop: 5, fontWeight: 700, textTransform: "uppercase" }}>{t.category}</div>
+            <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 5, fontWeight: 700, textTransform: "uppercase" }}>{t.category}</div>
           </Card>
         ))}
       </div>
@@ -2065,29 +2065,29 @@ function TasksView({ customTasks, onSave, onReset }) {
             {customTasks.map(t => (
               <Card key={t.id} style={{ padding: "10px 14px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <div style={{ flex: 1 }}><div style={{ fontSize: 13, fontWeight: 700 }}>{t.label}</div><div style={{ fontSize: 12, color: "#888", marginTop: 3 }}>{t.detail}</div></div>
+                  <div style={{ flex: 1 }}><div style={{ fontSize: 13, fontWeight: 700 }}>{t.label}</div><div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 3 }}>{t.detail}</div></div>
                   <div style={{ display: "flex", gap: 5, flexShrink: 0, marginLeft: 10 }}>
-                    <span style={{ fontSize: 11, color: "#aaa" }}>{t.duration}</span>
+                    <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{t.duration}</span>
                     <button onClick={() => setEditTask(t)} style={smallBtn}>Edit</button>
-                    <button onClick={() => onSave(customTasks.filter(x => x.id !== t.id))} style={{ ...smallBtn, borderColor: "#fcc", color: "#c0392b" }}>Del</button>
+                    <button onClick={() => onSave(customTasks.filter(x => x.id !== t.id))} style={{ ...smallBtn, borderColor: "var(--danger-text)", color: "var(--danger-text)" }}>Del</button>
                   </div>
                 </div>
-                <div style={{ fontSize: 10, color: "#bbb", marginTop: 5, fontWeight: 700, textTransform: "uppercase" }}>{t.category}</div>
+                <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 5, fontWeight: 700, textTransform: "uppercase" }}>{t.category}</div>
               </Card>
             ))}
           </div>
         </>
       )}
-      <div style={{ marginTop: 24, borderTop: "1px solid #F0EEE8", paddingTop: 16 }}>
+      <div style={{ marginTop: 24, borderTop: "1px solid var(--bg-app)", paddingTop: 16 }}>
         {!showReset ? (
-          <button onClick={() => setShowReset(true)} style={{ fontSize: 12, color: "#c0392b", background: "transparent", border: "1px solid #fcc", borderRadius: 8, padding: "5px 12px", cursor: "pointer" }}>Reset 60-day progress</button>
+          <button onClick={() => setShowReset(true)} style={{ fontSize: 12, color: "var(--danger-text)", background: "transparent", border: "1px solid var(--danger-text)", borderRadius: 8, padding: "5px 12px", cursor: "pointer" }}>Reset 60-day progress</button>
         ) : (
-          <Card style={{ background: "#FEF2F2", borderColor: "#fcc" }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#c0392b", marginBottom: 6 }}>Reset all progress?</div>
-            <div style={{ fontSize: 12, color: "#888", marginBottom: 10 }}>Clears daily completions and notes. Skills and custom tasks are kept.</div>
+          <Card style={{ background: "var(--danger-bg)", borderColor: "var(--danger-text)" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--danger-text)", marginBottom: 6 }}>Reset all progress?</div>
+            <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 10 }}>Clears daily completions and notes. Skills and custom tasks are kept.</div>
             <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => { onReset(); setShowReset(false); }} style={{ fontSize: 12, padding: "5px 14px", borderRadius: 8, border: "none", background: "#c0392b", color: "#fff", cursor: "pointer", fontWeight: 700 }}>Yes, reset</button>
-              <button onClick={() => setShowReset(false)} style={{ fontSize: 12, padding: "5px 14px", borderRadius: 8, border: "1px solid #ddd", background: "transparent", cursor: "pointer" }}>Cancel</button>
+              <button onClick={() => { onReset(); setShowReset(false); }} style={{ fontSize: 12, padding: "5px 14px", borderRadius: 8, border: "none", background: "var(--danger-text)", color: "var(--btn-text)", cursor: "pointer", fontWeight: 700 }}>Yes, reset</button>
+              <button onClick={() => setShowReset(false)} style={{ fontSize: 12, padding: "5px 14px", borderRadius: 8, border: "1px solid var(--border)", background: "transparent", cursor: "pointer" }}>Cancel</button>
             </div>
           </Card>
         )}
@@ -2097,17 +2097,17 @@ function TasksView({ customTasks, onSave, onReset }) {
           <div>
             {[{ k: "label", l: "Task name", p: "e.g. Read Kleppmann chapter" }, { k: "category", l: "Category", p: "e.g. System Design" }, { k: "duration", l: "Duration", p: "e.g. 30 min" }].map(f => (
               <div key={f.k} style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#555", marginBottom: 4 }}>{f.l}</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-main)", marginBottom: 4 }}>{f.l}</div>
                 <input value={editTask[f.k]} onChange={e => setEditTask(t => ({ ...t, [f.k]: e.target.value }))} placeholder={f.p} style={inpStyle} />
               </div>
             ))}
             <div style={{ marginBottom: 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#555", marginBottom: 4 }}>Detail</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-main)", marginBottom: 4 }}>Detail</div>
               <textarea value={editTask.detail} onChange={e => setEditTask(t => ({ ...t, detail: e.target.value }))} placeholder="What exactly to do..." style={{ ...inpStyle, minHeight: 60, resize: "vertical" }} />
             </div>
             <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => saveTask(editTask)} disabled={!editTask.label.trim()} style={{ flex: 1, padding: "10px", borderRadius: 10, border: "none", background: editTask.label.trim() ? "#1a1a1a" : "#ccc", color: "#fff", fontSize: 14, fontWeight: 700, cursor: editTask.label.trim() ? "pointer" : "default" }}>Save</button>
-              <button onClick={() => setEditTask(null)} style={{ padding: "10px 18px", borderRadius: 10, border: "1px solid #ddd", background: "transparent", fontSize: 14, cursor: "pointer" }}>Cancel</button>
+              <button onClick={() => saveTask(editTask)} disabled={!editTask.label.trim()} style={{ flex: 1, padding: "10px", borderRadius: 10, border: "none", background: editTask.label.trim() ? "var(--text-main)" : "var(--border)", color: "var(--btn-text)", fontSize: 14, fontWeight: 700, cursor: editTask.label.trim() ? "pointer" : "default" }}>Save</button>
+              <button onClick={() => setEditTask(null)} style={{ padding: "10px 18px", borderRadius: 10, border: "1px solid var(--border)", background: "transparent", fontSize: 14, cursor: "pointer" }}>Cancel</button>
             </div>
           </div>
         </Modal>
@@ -2120,10 +2120,10 @@ function TasksView({ customTasks, onSave, onReset }) {
 function Modal({ title, onClose, children }) {
   return (
     <div onClick={e => { if (e.target === e.currentTarget) onClose(); }} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 200 }}>
-      <div style={{ background: "#fff", borderRadius: "16px 16px 0 0", padding: 24, width: "100%", maxWidth: 760, maxHeight: "90vh", overflowY: "auto" }}>
+      <div style={{ background: "var(--bg-card)", borderRadius: "16px 16px 0 0", padding: 24, width: "100%", maxWidth: 760, maxHeight: "90vh", overflowY: "auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
           <div style={{ fontSize: 16, fontWeight: 700 }}>{title}</div>
-          <button onClick={onClose} style={{ fontSize: 22, background: "transparent", border: "none", cursor: "pointer", color: "#888", lineHeight: 1 }}>×</button>
+          <button onClick={onClose} style={{ fontSize: 22, background: "transparent", border: "none", cursor: "pointer", color: "var(--text-muted)", lineHeight: 1 }}>×</button>
         </div>
         {children}
       </div>
@@ -2132,12 +2132,12 @@ function Modal({ title, onClose, children }) {
 }
 
 // ─── Shared style tokens ──────────────────────────────────────
-export const inpStyle = { width: "100%", border: "1px solid #ddd", borderRadius: 8, padding: "8px 10px", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", background: "#fff" };
-const smallBtn = { fontSize: 11, padding: "2px 7px", borderRadius: 6, border: "1px solid #ddd", background: "transparent", cursor: "pointer", color: "#555" };
-const navBtn = { fontSize: 14, padding: "2px 8px", borderRadius: 6, border: "1px solid #ddd", background: "transparent", cursor: "pointer", color: "#555", lineHeight: 1.4 };
-const navBtnFull = { flex: 1, padding: "8px", borderRadius: 10, border: "1px solid #ddd", background: "transparent", fontSize: 13, cursor: "pointer", color: "#555" };
-const tabBtn = { fontSize: 12, padding: "5px 12px", borderRadius: 20, border: "1px solid #ddd", background: "transparent", color: "#666", cursor: "pointer" };
-const tabActive = { border: "1px solid #1a1a1a", background: "#1a1a1a", color: "#fff", fontWeight: 700 };
+export const inpStyle = { width: "100%", border: "1px solid var(--border)", borderRadius: 8, padding: "8px 10px", fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", background: "var(--bg-card)", color: "var(--text-main)" };
+const smallBtn = { fontSize: 11, padding: "2px 7px", borderRadius: 6, border: "1px solid var(--border)", background: "transparent", cursor: "pointer", color: "var(--text-main)" };
+const navBtn = { fontSize: 14, padding: "2px 8px", borderRadius: 6, border: "1px solid var(--border)", background: "transparent", cursor: "pointer", color: "var(--text-main)", lineHeight: 1.4 };
+const navBtnFull = { flex: 1, padding: "8px", borderRadius: 10, border: "1px solid var(--border)", background: "transparent", fontSize: 13, cursor: "pointer", color: "var(--text-main)" };
+const tabBtn = { fontSize: 12, padding: "5px 12px", borderRadius: 20, border: "1px solid var(--border)", background: "transparent", color: "var(--text-muted)", cursor: "pointer" };
+const tabActive = { border: "1px solid var(--text-main)", background: "var(--btn-bg)", color: "var(--btn-text)", fontWeight: 700 };
 
 const VIEWS = [
   { id: "today", label: "Today" },
@@ -2152,21 +2152,33 @@ const VIEWS = [
 function SettingsModal({ data, onSave, onClose }) {
   const [start, setStart] = useState(data.settings.startDate);
   const [days, setDays] = useState(data.settings.totalDays);
+  const [theme, setTheme] = useState(data.settings.theme || 'dark');
   return (
     <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
       <Card style={{ width: 340, padding: 24 }}>
-        <h3 style={{ margin: "0 0 16px 0" }}>App Settings</h3>
+        <h3 style={{ margin: "0 0 16px 0" }}>Settings</h3>
+        
+        <h4 style={{ margin: "0 0 12px 0", fontSize: 14, color: "var(--text-main)" }}>App Settings</h4>
         <div style={{ marginBottom: 16 }}>
-          <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Program Start Date</label>
+          <label style={{ fontSize: 12, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Program Start Date</label>
           <input type="date" value={start} onChange={e => setStart(e.target.value)} style={inpStyle} />
         </div>
-        <div style={{ marginBottom: 20 }}>
-          <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 4 }}>Total Duration (Days)</label>
+        <div style={{ marginBottom: 24 }}>
+          <label style={{ fontSize: 12, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Total Duration (Days)</label>
           <input type="number" value={days} onChange={e => setDays(Number(e.target.value))} style={inpStyle} />
         </div>
+
+        <h4 style={{ margin: "0 0 12px 0", fontSize: 14, color: "var(--text-main)", borderTop: "1px solid var(--border)", paddingTop: 16 }}>UI / Global Settings</h4>
+        <div style={{ marginBottom: 24 }}>
+          <label style={{ fontSize: 12, color: "var(--text-muted)", display: "block", marginBottom: 4 }}>Theme</label>
+          <select value={theme} onChange={(e) => setTheme(e.target.value)} style={inpStyle}>
+            <option value="dark">Dark Theme</option>
+            <option value="light">Light Theme</option>
+          </select>
+        </div>
         <div style={{ display: "flex", gap: 10 }}>
-          <button onClick={() => onSave({ startDate: start, totalDays: days })} style={{ flex: 1, padding: "10px", borderRadius: 10, background: "#1a1a1a", color: "#fff", border: "none", cursor: "pointer", fontWeight: 700 }}>Save Changes</button>
-          <button onClick={onClose} style={{ flex: 1, padding: "10px", borderRadius: 10, background: "#eee", color: "#666", border: "none", cursor: "pointer" }}>Cancel</button>
+          <button onClick={() => onSave({ startDate: start, totalDays: days, theme })} style={{ flex: 1, padding: "10px", borderRadius: 10, background: "var(--btn-bg)", color: "var(--btn-text)", border: "none", cursor: "pointer", fontWeight: 700 }}>Save Changes</button>
+          <button onClick={onClose} style={{ flex: 1, padding: "10px", borderRadius: 10, background: "var(--btn-bg-alt)", color: "var(--btn-text-alt)", border: "none", cursor: "pointer", fontWeight: 700 }}>Cancel</button>
         </div>
       </Card>
     </div>
@@ -2239,11 +2251,11 @@ function GeneralNotesSidebar({ data = [], onUpdate }) {
   };
 
   return (
-    <div style={{ width: 260, borderRight: "1px solid #E6E4E0", background: "#fbfaf8", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0 }}>
-      <div style={{ padding: "20px 16px", borderBottom: "1px solid #E6E4E0" }}>
+    <div style={{ width: 260, borderRight: "1px solid var(--border)", background: "var(--bg-sidebar)", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0 }}>
+      <div style={{ padding: "20px 16px", borderBottom: "1px solid var(--border)" }}>
         <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700 }}>General Notes</h3>
       </div>
-      <div style={{ padding: 12, borderBottom: "1px solid #E6E4E0" }}>
+      <div style={{ padding: 12, borderBottom: "1px solid var(--border)" }}>
         <textarea 
           value={txt} 
           onChange={e => setTxt(e.target.value)} 
@@ -2253,14 +2265,14 @@ function GeneralNotesSidebar({ data = [], onUpdate }) {
         <div style={{ display: "flex", gap: 6 }}>
           <button 
             onClick={handleSaveOrUpdate} 
-            style={{ flex: 1, padding: "6px", borderRadius: 8, background: "#1a1a1a", color: "#fff", border: "none", fontSize: 12, cursor: "pointer", fontWeight: 700 }}
+            style={{ flex: 1, padding: "6px", borderRadius: 8, background: "var(--btn-bg)", color: "var(--btn-text)", border: "none", fontSize: 12, cursor: "pointer", fontWeight: 700 }}
           >
             {editingNoteId ? "Update" : "Save Note"}
           </button>
           {editingNoteId !== null && (
             <button 
               onClick={cancelEdit} 
-              style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #cbd5e1", background: "transparent", fontSize: 12, cursor: "pointer", color: "#475569" }}
+              style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid var(--border)", background: "transparent", fontSize: 12, cursor: "pointer", color: "var(--text-muted)" }}
             >
               Cancel
             </button>
@@ -2275,17 +2287,17 @@ function GeneralNotesSidebar({ data = [], onUpdate }) {
               key={n.id} 
               onClick={() => toggleExpand(n.id)}
               style={{ 
-                background: "#fff", 
+                background: "var(--bg-card)", 
                 padding: 10, 
                 borderRadius: 8, 
-                border: isExpanded ? "1.5px solid #1a1a1a" : "1px solid #E6E4E0", 
+                border: isExpanded ? "1.5px solid var(--text-main)" : "1px solid var(--border)", 
                 boxShadow: isExpanded ? "0 2px 8px rgba(0,0,0,0.05)" : "none",
                 position: "relative",
                 cursor: "pointer",
                 transition: "all 0.15s"
               }}
             >
-              <div style={{ fontWeight: 700, fontSize: 12, marginBottom: 4, color: "#1e293b" }}>
+              <div style={{ fontWeight: 700, fontSize: 12, marginBottom: 4, color: "var(--text-main)" }}>
                 {n.pinned && <span style={{ marginRight: 4 }}>📌</span>}
                 {n.title || "Quick Note"}
               </div>
@@ -2295,7 +2307,7 @@ function GeneralNotesSidebar({ data = [], onUpdate }) {
               <div style={{ 
                 fontSize: 11, 
                 lineHeight: 1.4, 
-                color: "#475569", 
+                color: "var(--text-muted)", 
                 whiteSpace: "pre-wrap",
                 wordBreak: "break-word",
                 ...(isExpanded ? {} : {
@@ -2307,7 +2319,7 @@ function GeneralNotesSidebar({ data = [], onUpdate }) {
               }}>
                 {n.text || "Empty note"}
               </div>
-              <div style={{ fontSize: 9, color: "#aaa", marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ fontSize: 9, color: "var(--text-muted)", marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span>{new Date(n.time || Date.now()).toLocaleDateString()}</span>
                 <div style={{ display: "flex", gap: 8 }}>
                   <span 
@@ -2318,7 +2330,7 @@ function GeneralNotesSidebar({ data = [], onUpdate }) {
                   </span>
                   <span 
                     onClick={(e) => handleDelete(n.id, e)} 
-                    style={{ cursor: "pointer", color: "#ef4444", fontWeight: 700 }}
+                    style={{ cursor: "pointer", color: "var(--danger-text)", fontWeight: 700 }}
                   >
                     Delete
                   </span>
@@ -2347,14 +2359,14 @@ function DailyNotesSection({ notes = [], onUpdate }) {
       <h4 style={{ fontSize: 13, marginBottom: 12 }}>Daily Logs</h4>
       <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
         <input value={txt} onChange={e => setTxt(e.target.value)} placeholder="Add a log entry for today..." style={{ ...inpStyle, flex: 1 }} onKeyDown={e => e.key === 'Enter' && addNote()} />
-        <button onClick={addNote} style={{ padding: "0 15px", borderRadius: 8, background: "#1a1a1a", color: "#fff", border: "none", fontSize: 12, cursor: "pointer" }}>Submit</button>
+        <button onClick={addNote} style={{ padding: "0 15px", borderRadius: 8, background: "var(--btn-bg)", color: "var(--btn-text)", border: "none", fontSize: 12, cursor: "pointer" }}>Submit</button>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {notes.length === 0 && <div style={{ fontSize: 12, color: "#aaa", fontStyle: "italic" }}>No notes for today yet.</div>}
+        {notes.length === 0 && <div style={{ fontSize: 12, color: "var(--text-muted)", fontStyle: "italic" }}>No notes for today yet.</div>}
         {notes.map(n => (
-          <div key={n.id} style={{ background: "#FBFBFA", padding: "10px 12px", borderRadius: 10, border: "1px solid #E6E4E0" }}>
+          <div key={n.id} style={{ background: "var(--bg-sidebar)", padding: "10px 12px", borderRadius: 10, border: "1px solid var(--border)" }}>
             <div style={{ fontSize: 13, lineHeight: 1.5 }}>{n.text}</div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#888", marginTop: 6 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "var(--text-muted)", marginTop: 6 }}>
               <span>{n.time === "Migrated" ? "Legacy" : formatTime(n.time)}</span>
               <span onClick={() => deleteNote(n.id)} style={{ color: "#D85A30", cursor: "pointer" }}>Remove</span>
             </div>
@@ -2375,13 +2387,13 @@ function DailyPlanSection({ plan = [], onUpdate }) {
       <h4 style={{ fontSize: 13, marginBottom: 12 }}>Plan vs Reality</h4>
       <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
         <input value={txt} onChange={e => setTxt(e.target.value)} placeholder="What do you plan to achieve?" style={{ ...inpStyle, flex: 1 }} onKeyDown={e => e.key === 'Enter' && add()} />
-        <button onClick={add} style={{ padding: "0 15px", borderRadius: 8, background: "#1a1a1a", color: "#fff", border: "none", fontSize: 12, cursor: "pointer" }}>Plan It</button>
+        <button onClick={add} style={{ padding: "0 15px", borderRadius: 8, background: "var(--btn-bg)", color: "var(--btn-text)", border: "none", fontSize: 12, cursor: "pointer" }}>Plan It</button>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         {plan.map(p => (
-          <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 10, background: p.achieved ? "#f0fdf4" : "#fff", padding: "8px 12px", borderRadius: 8, border: "1px solid #E6E4E0" }}>
+          <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 10, background: p.achieved ? "var(--success-bg)" : "var(--bg-card)", padding: "8px 12px", borderRadius: 8, border: "1px solid var(--border)" }}>
             <input type="checkbox" checked={p.achieved} onChange={() => toggle(p.id)} style={{ cursor: "pointer" }} />
-            <span style={{ flex: 1, fontSize: 13, textDecoration: p.achieved ? "line-through" : "none", color: p.achieved ? "#115e59" : "#333" }}>{p.text}</span>
+            <span style={{ flex: 1, fontSize: 13, textDecoration: p.achieved ? "line-through" : "none", color: p.achieved ? "var(--success-text)" : "var(--text-main)" }}>{p.text}</span>
             <span onClick={() => remove(p.id)} style={{ color: "#D85A30", cursor: "pointer", fontSize: 14 }}>×</span>
           </div>
         ))}
@@ -2406,10 +2418,10 @@ function ScheduleView({ data, onUpdatePlanning }) {
         const pct = plan.length ? Math.round((achievedCount / plan.length) * 100) : 0;
 
         return (
-          <Card key={d.key} style={{ padding: 16, border: d.key === todayKey ? "2px solid #1a1a1a" : "1px solid #E6E4E0" }}>
+          <Card key={d.key} style={{ padding: 16, border: d.key === todayKey ? "2px solid var(--text-main)" : "1px solid var(--border)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
               <span style={{ fontWeight: 700, fontSize: 14 }}>{d.label}</span>
-              {plan.length > 0 && <span style={{ fontSize: 12, color: pct === 100 ? "#1D9E75" : "#666" }}>{pct}% complete</span>}
+              {plan.length > 0 && <span style={{ fontSize: 12, color: pct === 100 ? "#1D9E75" : "var(--text-muted)" }}>{pct}% complete</span>}
             </div>
             <DailyPlanSection plan={plan} onUpdate={(newPlan) => onUpdatePlanning(d.key, newPlan)} />
           </Card>
@@ -2450,6 +2462,20 @@ export default function App() {
     }, 700);
   }, []);
 
+  // Theme Management
+  useEffect(() => {
+    if (data && data.settings) {
+      const theme = data.settings.theme || 'dark';
+      if (theme === 'dark') {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.remove('dark-theme');
+      }
+    } else {
+      document.body.classList.add('dark-theme'); // default to dark
+    }
+  }, [data]);
+
   // Safe migration of existing/legacy notes on load
   useEffect(() => {
     if (data && data.generalNotes && !migrationDone) {
@@ -2474,7 +2500,7 @@ export default function App() {
   const updateDailyNotes = (date, notes) => persistData({ ...data, dailyNotes: { ...data.dailyNotes, [date]: notes } });
   const updateDailyPlanning = (date, planning) => persistData({ ...data, dailyPlanning: { ...data.dailyPlanning, [date]: planning } });
 
-  if (!data) return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", fontSize: 14, color: "#888" }}>Loading…</div>;
+  if (!data) return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", fontSize: 14, color: "var(--text-muted)" }}>Loading…</div>;
 
   const { totalDays, startDate } = data.settings;
   const dayNumber = getDayNumber(startDate);
@@ -2487,7 +2513,7 @@ export default function App() {
   const planTotal = (data.sixMonthPlan || SIX_MONTH_PLAN).filter(m => Array.isArray(m.weeks)).reduce((a, m) => a + m.weeks.reduce((b, w) => b + w.tasks.length, 0), 0);
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#F7F6F3", color: "#333" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: "var(--bg-app)", color: "var(--text-main)" }}>
       {showSettings && <SettingsModal data={data} onSave={(s) => { updateSettings(s); setShowSettings(false); }} onClose={() => setShowSettings(false)} />}
 
       {sidebarOpen && (
@@ -2499,30 +2525,30 @@ export default function App() {
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
         {/* Top bar */}
-        <div style={{ background: "#fff", borderBottom: "1px solid #E8E6E0", padding: "10px 20px", position: "sticky", top: 0, zIndex: 100 }}>
+        <div style={{ background: "var(--bg-card)", borderBottom: "1px solid var(--border)", padding: "10px 20px", position: "sticky", top: 0, zIndex: 100 }}>
           <div style={{ maxWidth: 820, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", alignItems: "center" }} title="Toggle Sidebar">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
               </button>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: "#1a1a1a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: "var(--text-main)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--bg-card)" strokeWidth="2.2" strokeLinecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
                 </div>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 14, letterSpacing: "-0.3px" }}>Architect Tracker</div>
-                  <div style={{ fontSize: 10, color: "#aaa" }}>Day {dayNumber}/{totalDays} · {streak > 0 ? `🔥 ${streak} streak` : "Build your streak"} {saving ? "· saving…" : ""}</div>
+                  <div style={{ fontSize: 10, color: "var(--text-muted)" }}>Day {dayNumber}/{totalDays} · {streak > 0 ? `🔥 ${streak} streak` : "Build your streak"} {saving ? "· saving…" : ""}</div>
                 </div>
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <nav style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
                 {VIEWS.map(v => (
-                  <button key={v.id} onClick={() => setView(v.id)} style={{ fontSize: 12, padding: "5px 11px", borderRadius: 20, border: view === v.id ? "1px solid #1a1a1a" : "1px solid #E8E6E0", background: view === v.id ? "#1a1a1a" : "transparent", color: view === v.id ? "#fff" : "#555", cursor: "pointer", fontWeight: view === v.id ? 700 : 400 }}>{v.label}</button>
+                  <button key={v.id} onClick={() => setView(v.id)} style={{ fontSize: 12, padding: "5px 11px", borderRadius: 20, border: view === v.id ? "1px solid var(--text-main)" : "1px solid var(--border)", background: view === v.id ? "var(--text-main)" : "transparent", color: view === v.id ? "var(--bg-card)" : "var(--text-main)", cursor: "pointer", fontWeight: view === v.id ? 700 : 400 }}>{v.label}</button>
                 ))}
               </nav>
               <button onClick={() => setShowSettings(true)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", alignItems: "center" }} title="Settings">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
               </button>
             </div>
           </div>
@@ -2537,9 +2563,9 @@ export default function App() {
               { val: `${todayDone}/${allTasks.length}`, lbl: "today done" },
               { val: `${planDone}/${planTotal}`, lbl: "plan tasks" },
             ].map((s, i) => (
-              <div key={i} style={{ background: "#fff", border: "1px solid #E8E6E0", borderRadius: 10, padding: "10px 12px", textAlign: "center" }}>
+              <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 10, padding: "10px 12px", textAlign: "center" }}>
                 <div style={{ fontSize: 18, fontWeight: 700 }}>{s.val}</div>
-                <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>{s.lbl}</div>
+                <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>{s.lbl}</div>
               </div>
             ))}
           </div>

@@ -42,7 +42,7 @@ echo "Starting application..."
 cd "$BACKEND_DIR"
 
 # Start the application in the background
-java -jar "$JAR_FILE" > "$LOG_FILE" 2>&1 &
+java -Xlog:gc:file="$LOGS_DIR/gc.log" -jar "$JAR_FILE" -server.port=3001 > "$LOG_FILE" 2>&1 &
 SERVER_PID=$!
 echo $SERVER_PID > "$PID_FILE"
 
