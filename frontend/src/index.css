@@ -27,12 +27,17 @@
   --badge-lead-bg: #EEEDFE; --badge-lead-text: #3C3489;
   
   --cat-sys-bg: #fef3c7; --cat-sys-text: #d97706;
+  --cat-design-bg: #fef3c7; --cat-design-text: #d97706;
   --cat-micro-bg: #e0e7ff; --cat-micro-text: #4f46e5;
   --cat-dp-bg: #ccfbf1; --cat-dp-text: #0d9488;
   --cat-java-bg: #fef2e6; --cat-java-text: #105412;
   --cat-core-bg: #f3e8ff; --cat-core-text: #7c3aed;
   --cat-gen-bg: #f1f5f9; --cat-gen-text: #475569;
   --cat-daily-bg: #d1fae5; --cat-daily-text: #059669;
+  --cat-arch-bg: #e0f2fe; --cat-arch-text: #0369a1;
+  --cat-data-bg: #ffedd5; --cat-data-text: #ea580c;
+  --cat-cloud-bg: #e6f1fb; --cat-cloud-text: #185fa5;
+  --cat-msg-bg: #ffe4e6; --cat-msg-text: #e11d48;
 
   --success-text: #166534;
   --success-bg: #f0fdf4;
@@ -74,12 +79,17 @@
   --badge-lead-bg: rgba(60, 52, 137, 0.2); --badge-lead-text: #c4b5fd;
 
   --cat-sys-bg: rgba(217, 119, 6, 0.2); --cat-sys-text: #fbbf24;
+  --cat-design-bg: rgba(217, 119, 6, 0.2); --cat-design-text: #fbbf24;
   --cat-micro-bg: rgba(79, 70, 229, 0.2); --cat-micro-text: #a5b4fc;
   --cat-dp-bg: rgba(13, 148, 136, 0.2); --cat-dp-text: #5eead4;
   --cat-java-bg: rgba(16, 84, 18, 0.2); --cat-java-text: #86efac;
   --cat-core-bg: rgba(124, 58, 237, 0.2); --cat-core-text: #d8b4fe;
   --cat-gen-bg: rgba(71, 85, 105, 0.2); --cat-gen-text: #cbd5e1;
   --cat-daily-bg: rgba(5, 150, 105, 0.2); --cat-daily-text: #6ee7b7;
+  --cat-arch-bg: rgba(3, 105, 161, 0.2); --cat-arch-text: #7dd3fc;
+  --cat-data-bg: rgba(234, 88, 12, 0.2); --cat-data-text: #fdba74;
+  --cat-cloud-bg: rgba(24, 95, 165, 0.2); --cat-cloud-text: #93c5fd;
+  --cat-msg-bg: rgba(225, 29, 72, 0.2); --cat-msg-text: #fda4af;
 
   --success-text: #4ade80;
   --success-bg: rgba(22, 101, 52, 0.2);

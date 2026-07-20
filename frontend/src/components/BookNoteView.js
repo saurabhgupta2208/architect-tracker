@@ -1,10 +1,19 @@
 import React, { useState, useRef } from "react";
-import { MarkdownRenderer, CATEGORY_COLORS, NOTE_CATEGORIES, inpStyle } from "../App";
+import { MarkdownRenderer } from "./SharedComponents";
+import { CATEGORY_COLORS, NOTE_CATEGORIES, inpStyle } from "../utils";
 import { API_URL } from "../constants";
 
-export default function BookNoteView({ note, onUpdate, isExpanded, setIsExpanded, onDelete }) {
-  const [activeChapterId, setActiveChapterId] = useState(note.chapters?.[0]?.id || null);
-  const [activePageId, setActivePageId] = useState(note.chapters?.[0]?.pages?.[0]?.id || null);
+export default function BookNoteView({ note, onUpdate, isExpanded, setIsExpanded, onDelete, initialChapterId, initialPageId, showBackToSearch, onBackToSearch }) {
+  const [activeChapterId, setActiveChapterId] = useState(initialChapterId || note.chapters?.[0]?.id || null);
+  const [activePageId, setActivePageId] = useState(initialPageId || note.chapters?.[0]?.pages?.[0]?.id || null);
+
+  // Sync chapter and page if deep linked from search
+  React.useEffect(() => {
+    if (initialChapterId && initialPageId) {
+      setActiveChapterId(initialChapterId);
+      setActivePageId(initialPageId);
+    }
+  }, [initialChapterId, initialPageId]);
   
   const [isEditingPage, setIsEditingPage] = useState(false);
   const [editTitle, setEditTitle] = useState("");
@@ -211,6 +220,26 @@ export default function BookNoteView({ note, onUpdate, isExpanded, setIsExpanded
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {showBackToSearch && (
+            <button 
+              onClick={onBackToSearch}
+              style={{
+                background: "var(--badge-cloud-bg, #eef2f6)",
+                border: "1px solid var(--border)",
+                borderRadius: 6,
+                color: "var(--badge-cloud-text, #1e293b)",
+                fontSize: 11,
+                fontWeight: 700,
+                cursor: "pointer",
+                padding: "4px 10px",
+                display: "flex",
+                alignItems: "center",
+                gap: 4
+              }}
+            >
+              🔍 Back to Search
+            </button>
+          )}
           <button 
             onClick={() => setIsExpanded(!isExpanded)}
             style={{ background: "none", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text-muted)", fontSize: 11, fontWeight: 700, cursor: "pointer", padding: "4px 10px" }}

@@ -23,7 +23,11 @@ public class TrackerController {
 
     @GetMapping("/data")
     public ResponseEntity<Map<String, Object>> getData() {
-        return ResponseEntity.ok(dataService.readData());
+        return ResponseEntity.ok()
+                .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                .header("Pragma", "no-cache")
+                .header("Expires", "0")
+                .body(dataService.readData());
     }
 
     @PutMapping("/data")
@@ -38,7 +42,11 @@ public class TrackerController {
     @GetMapping("/skills")
     public ResponseEntity<Object> getSkills() {
         Map<String, Object> data = dataService.readData();
-        return ResponseEntity.ok(data.getOrDefault("skills", new Object[0]));
+        return ResponseEntity.ok()
+                .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                .header("Pragma", "no-cache")
+                .header("Expires", "0")
+                .body(data.getOrDefault("skills", new Object[0]));
     }
 
     @PutMapping("/skills")
@@ -55,7 +63,11 @@ public class TrackerController {
     @GetMapping("/plan")
     public ResponseEntity<Object> getPlan() {
         Map<String, Object> data = dataService.readData();
-        return ResponseEntity.ok(data.getOrDefault("sixMonthPlan", new HashMap<>()));
+        return ResponseEntity.ok()
+                .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                .header("Pragma", "no-cache")
+                .header("Expires", "0")
+                .body(data.getOrDefault("sixMonthPlan", new HashMap<>()));
     }
 
     @PutMapping("/plan")
@@ -80,7 +92,11 @@ public class TrackerController {
         Map<String, Object> response = new HashMap<>();
         response.put("today", today);
         response.put("dayData", dayData);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok()
+                .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                .header("Pragma", "no-cache")
+                .header("Expires", "0")
+                .body(response);
     }
 
     @PostMapping("/upload")
